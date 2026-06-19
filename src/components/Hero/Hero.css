@@ -35,7 +35,7 @@
 .hero-left h1 {
   font-size: 40px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary, #0f172a);
   margin: 0 0 16px 0;
   line-height: 1.15;
   letter-spacing: -0.03em;
@@ -43,9 +43,11 @@
 
 /* Eye-catching purple-blue brand gradient for key text emphasis */
 .hero-gradient-text {
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important; /* Fallback for global !important color overrides */
+  display: inline-block;
 }
 
 .hero-left p {

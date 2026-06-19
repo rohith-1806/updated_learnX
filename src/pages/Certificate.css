@@ -313,3 +313,36 @@
     align-items: center;
   }
 }
+
+/* ====================================================
+   DARK MODE ISOLATION FOR CERTIFICATE CANVAS
+   ==================================================== */
+[data-theme="dark"] .certificate-canvas-frame {
+  background-color: #fffdf6 !important;
+  background: #fffdf6 !important;
+}
+
+[data-theme="dark"] .certificate-canvas-frame .cert-main-title,
+[data-theme="dark"] .certificate-canvas-frame .cert-course-name,
+[data-theme="dark"] .certificate-canvas-frame .seal-text,
+[data-theme="dark"] .certificate-canvas-frame .seal-stars {
+  color: #78350f !important;
+}
+
+[data-theme="dark"] .certificate-canvas-frame .cert-user-name,
+[data-theme="dark"] .certificate-canvas-frame .sig-line,
+[data-theme="dark"] .certificate-canvas-frame .meta-line .val {
+  color: #1e293b !important;
+}
+
+[data-theme="dark"] .certificate-canvas-frame .cert-subtitle,
+[data-theme="dark"] .certificate-canvas-frame .cert-congrats-text,
+[data-theme="dark"] .certificate-canvas-frame .sig-label,
+[data-theme="dark"] .certificate-canvas-frame .meta-line .lbl {
+  color: #64748b !important;
+}
+
+[data-theme="dark"] .certificate-canvas-frame .cert-presented-txt,
+[data-theme="dark"] .certificate-canvas-frame .cert-completion-statement {
+  color: #475569 !important;
+}

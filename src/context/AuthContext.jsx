@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { loginUser, changePassword as apiChangePassword } from "../api/authApi";
+import { loginUser, registerUser, getMe, changePassword as apiChangePassword } from "../services/authApi";
 
 const AuthContext = createContext(null);
 
@@ -11,20 +11,73 @@ export const AuthProvider = ({ children }) => {
   const [certificates, setCertificates] = useState([]);
 
   useEffect(() => {
-    // Load persisted auth state on mount
+    // On mount: if token exists, validate with /auth/me
     const savedToken = localStorage.getItem("token") || localStorage.getItem("userToken");
-    const savedUser = localStorage.getItem("loggedInUser");
 
-    if (savedToken && savedUser) {
+    if (savedToken && savedToken !== "null" && savedToken !== "undefined" && savedToken.trim() !== "") {
       setToken(savedToken);
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (err) {
-        console.error("Failed to parse saved user", err);
-      }
+      fetchCurrentUser(savedToken);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchCurrentUser = async (authToken) => {
+    try {
+      // Temporarily set token so apiClient interceptor can use it
+      if (authToken) {
+        localStorage.setItem("token", authToken);
+      }
+      const data = await getMe();
+      const userData = data.user || data.data || data;
+      setUser(userData);
+      setToken(authToken || localStorage.getItem("token"));
+      localStorage.setItem("loggedInUser", JSON.stringify(userData));
+    } catch (err) {
+      console.error("Failed to fetch user profile from /auth/me", err);
+      // Token is invalid — load from localStorage fallback
+      const savedUser = localStorage.getItem("loggedInUser");
+      if (savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch (parseErr) {
+          console.error("Failed to parse saved user", parseErr);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const register = async (name, email, password) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const data = await registerUser(name, email, password);
+
+      // Save token and user details if returned
+      const userToken = data.token;
+      const userData = data.user || { name, email };
+
+      if (userToken) {
+        setToken(userToken);
+        localStorage.setItem("token", userToken);
+        localStorage.setItem("userToken", userToken);
+      }
+
+      setUser(userData);
+      localStorage.setItem("loggedInUser", JSON.stringify(userData));
+
+      return { success: true, user: userData };
+    } catch (err) {
+      const errMsg = err.response?.data?.error || err.response?.data?.message || "Registration failed";
+      setError(errMsg);
+      throw new Error(errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (email, password) => {
     setError(null);
@@ -78,7 +131,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, error, login, logout, updatePassword, certificates, setCertificates }}>
+    <AuthContext.Provider value={{ user, token, loading, error, login, logout, register, updatePassword, fetchCurrentUser, certificates, setCertificates }}>
       {children}
     </AuthContext.Provider>
   );

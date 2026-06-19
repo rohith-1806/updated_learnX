@@ -1,10 +1,6 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
-
-// AUTH & THEME CONTEXT
-import { AuthProvider } from "./context/AuthContext";
-import { ThemeProvider } from "./context/ThemeContext";
 
 // COMMON NEW
 import Navbar from "./components/Navbar";
@@ -45,7 +41,7 @@ function HomePage() {
   );
 }
 
-function AppContent() {
+function App() {
   const location = useLocation();
 
   // Hide the global Navbar in LMS player, dashboards, and verify-email screen
@@ -57,6 +53,7 @@ function AppContent() {
 
   return (
     <>
+      <CustomCursor />
       {!hideNavbar && <Navbar />}
       <Routes>
         {/* HOME */}
@@ -85,21 +82,6 @@ function AppContent() {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
-    </>
-  );
-}
-
-function App() {
-  return (
-    <>
-      <CustomCursor />
-      <ThemeProvider>
-        <AuthProvider>
-          <BrowserRouter>
-          <AppContent />
-          </BrowserRouter>
-        </AuthProvider>
-      </ThemeProvider>
       <LearnXHelper />
     </>
   );

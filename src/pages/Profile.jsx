@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { getMyEnrollments } from "../api/enrollmentApi";
-import { getMyEvents } from "../api/authApi";
-import { getMyCertificates } from "../api/certificateApi";
-import { getModules } from "../api/courseApi";
+import { getMyEnrollments } from "../services/enrollmentApi";
+import { getMyEvents } from "../services/authApi";
+import { getMyCertificates } from "../services/certificateApi";
+import { getModules } from "../services/courseApi";
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
+import Navbar from "../components/Navbar/Navbar";
+import Footer from "../components/Footer/Footer";
+import Loader from "../components/Loader/Loader";
 import "./Profile.css";
 
 const cleanCourseName = (name, description) => {
@@ -165,12 +168,7 @@ const Profile = () => {
   };
 
   if (loading) {
-    return (
-      <div className="profile-loading-viewport">
-        <div className="spinner-large"></div>
-        <p>Retrieving user dashboard data...</p>
-      </div>
-    );
+    return <Loader text="Retrieving user dashboard data..." />;
   }
 
   return (

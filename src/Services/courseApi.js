@@ -1,8 +1,16 @@
 import apiClient from "./apiClient";
 
-export const getCourses = async (trackId) => {
-  const response = await apiClient.get(`/content/courses?trackId=${trackId}`);
-  return response.data.data || response.data;
+const extractDataArray = (response) => {
+  const data = response.data?.data || [];
+  if (!Array.isArray(data)) {
+    return [];
+  }
+  return data;
+};
+
+export const getCourses = async (domainId) => {
+  const response = await apiClient.get(`/content/courses?domainId=${domainId}`);
+  return extractDataArray(response);
 };
 
 export const getCourseDetails = async (courseId) => {
@@ -18,31 +26,31 @@ export const getCourseDetails = async (courseId) => {
 
   // Fallback: fetch all courses and search by ID
   const response = await apiClient.get("/content/courses");
-  const list = response.data.data || response.data || [];
+  const list = extractDataArray(response);
   return list.find((c) => c._id === courseId);
 };
 
 export const getModules = async (courseId) => {
   const response = await apiClient.get(`/content/modules?courseId=${courseId}`);
-  return response.data.data || response.data || [];
+  return extractDataArray(response);
 };
 
 export const getSubModules = async (moduleId) => {
   const response = await apiClient.get(`/content/sub-modules?moduleId=${moduleId}`);
-  return response.data.data || response.data || [];
+  return extractDataArray(response);
 };
 
 export const getVideos = async (subModuleId) => {
   const response = await apiClient.get(`/content/videos?subModuleId=${subModuleId}`);
-  return response.data.data || response.data || [];
+  return extractDataArray(response);
 };
 
 export const getAssignments = async (moduleId) => {
   const response = await apiClient.get(`/content/assignments?moduleId=${moduleId}`);
-  return response.data.data || response.data || [];
+  return extractDataArray(response);
 };
 
 export const getFinalAssignments = async (courseId) => {
   const response = await apiClient.get(`/content/final-assignments?courseId=${courseId}`);
-  return response.data.data || response.data || [];
+  return extractDataArray(response);
 };

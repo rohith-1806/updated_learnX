@@ -384,3 +384,70 @@
     max-height: 520px;
   }
 }
+
+/* =========================================
+   Dark Theme Overrides
+   ========================================= */
+html[data-theme="dark"] .learnx-chat-window,
+:root[data-theme="dark"] .learnx-chat-window {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5), 0 5px 15px rgba(108, 76, 255, 0.2);
+}
+
+html[data-theme="dark"] .learnx-chat-header,
+:root[data-theme="dark"] .learnx-chat-header {
+  background: #0f172a;
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="dark"] .learnx-chat-title,
+:root[data-theme="dark"] .learnx-chat-title {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .learnx-chat-close,
+:root[data-theme="dark"] .learnx-chat-close {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .learnx-chat-close:hover,
+:root[data-theme="dark"] .learnx-chat-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .learnx-chat-body,
+:root[data-theme="dark"] .learnx-chat-body {
+  background: #0f172a;
+}
+
+html[data-theme="dark"] .learnx-chat-message.bot,
+:root[data-theme="dark"] .learnx-chat-message.bot {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="dark"] .learnx-chat-input-area,
+:root[data-theme="dark"] .learnx-chat-input-area {
+  background: #0f172a;
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="dark"] .learnx-chat-input,
+:root[data-theme="dark"] .learnx-chat-input {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .learnx-chat-input:focus,
+:root[data-theme="dark"] .learnx-chat-input:focus {
+  background: #1e293b;
+  border-color: #7c3aed;
+}
+
+html[data-theme="dark"] .typing-text,
+:root[data-theme="dark"] .typing-text {
+  color: #94a3b8;
+}

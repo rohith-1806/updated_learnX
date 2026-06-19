@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import API from "../../Services/eventApi";
+import API from "../../services/eventApi";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {

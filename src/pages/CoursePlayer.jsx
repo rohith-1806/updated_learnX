@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getCourseDetails, getModules, getSubModules, getVideos, getAssignments, getFinalAssignments } from "../api/courseApi";
-import { getMyEnrollments, updateProgress } from "../api/enrollmentApi";
-import { getMyCertificates } from "../api/certificateApi";
+import { getCourseDetails, getModules, getSubModules, getVideos, getAssignments, getFinalAssignments } from "../services/courseApi";
+import { getMyEnrollments, updateProgress } from "../services/enrollmentApi";
+import { getMyCertificates } from "../services/certificateApi";
 import { getFallbackContent, generateQuiz, generateFinalAssignment, getCourseVideo } from "../utils/fallbackContent";
 import { normalizeArray, safeRender } from "../utils/normalizeArray";
 import { useAuth } from "../context/AuthContext";
 import ProgressBar from "../components/ProgressBar";
+import Loader from "../components/Loader/Loader";
 import "./CoursePlayer.css";
 
 const cleanCourseName = (name, description) => {
@@ -117,15 +118,27 @@ const CoursePlayer = () => {
     if (!videoItem) return "";
     
     const isFallback = videoItem._id && videoItem._id.includes("-vid-");
-    const hasRealVideo = videoItem.videoUrl && videoItem.videoUrl.trim() !== "" && !videoItem.videoUrl.includes("dQw4w9WgXcQ") && !videoItem.videoUrl.includes("dQw4w9");
+    const rawUrl = videoItem.videoUrl || videoItem.video_url || videoItem.youtubeUrl || videoItem.url || videoItem.link || videoItem.contentUrl || videoItem.embedUrl || "";
+    const hasRealVideo = rawUrl && rawUrl.trim() !== "" && !rawUrl.includes("dQw4w9WgXcQ") && !rawUrl.includes("dQw4w9");
 
     const cTitle = course?.title || course?.name || "";
     const tTitle = currentTopic?.name || currentTopic?.title || videoItem.title || "";
 
     if (!isFallback && hasRealVideo) {
-      let url = videoItem.videoUrl;
+      let url = rawUrl.trim();
       if (url.includes("watch?v=")) {
         url = url.replace("watch?v=", "embed/");
+        // Remove trailing query params like &list=
+        const ampersandIdx = url.indexOf("&");
+        if (ampersandIdx !== -1) {
+          url = url.substring(0, ampersandIdx);
+        }
+      } else if (url.includes("youtu.be/")) {
+        url = url.replace("youtu.be/", "youtube.com/embed/");
+        const qmarkIdx = url.indexOf("?");
+        if (qmarkIdx !== -1) {
+          url = url.substring(0, qmarkIdx);
+        }
       }
       return url;
     }
@@ -284,15 +297,7 @@ const CoursePlayer = () => {
       setQuizzes(allQuizzes);
       setFinalAssignments(finals);
 
-      // Save course items list for progress calculations
-      const allItemIds = [
-        ...allSubModules.map(t => t._id),
-        ...allVideos.map(v => v._id),
-        ...allAssignments.map(a => a._id),
-        ...allQuizzes.map(q => q._id),
-        ...finals.map(f => f._id)
-      ];
-      localStorage.setItem(`course_items_${courseId}`, JSON.stringify(allItemIds));
+      // Course items list — used for sidebar display only (backend tracks actual progress)
 
       // Re-fetch enrollment to get enriched local progress sync immediately
       const enrichedEnrolls = await getMyEnrollments();
@@ -322,82 +327,57 @@ const CoursePlayer = () => {
   const handleMarkComplete = async (targetItemId, itemType) => {
     if (!enrollment) return;
     
-    // Guard: Never allow duplicate PUT calls/completions
+    // Guard: Never allow duplicate completions
     if (enrollment.completedSubModules?.includes(targetItemId)) {
       return;
     }
 
     setSubmittingProgress(true);
 
-    let targetSubModuleId = null;
+    // Resolve the module ID to send to backend as completedModuleId
+    let completedModuleId = null;
 
     if (itemType === "tutorial") {
-      targetSubModuleId = targetItemId;
+      // Tutorials are submodules — send their moduleId or the item itself
+      const tut = tutorials.find((t) => t._id === targetItemId);
+      completedModuleId = tut?.moduleId || targetItemId;
     } else if (itemType === "video") {
-      if (targetItemId === `${courseId}-vid-1`) {
-        targetSubModuleId = targetItemId;
-      } else {
-        const vid = videos.find((v) => v._id === targetItemId);
-        targetSubModuleId = vid ? vid.subModuleId : null;
-      }
+      const vid = videos.find((v) => v._id === targetItemId);
+      const parentSub = vid ? tutorials.find((t) => t._id === vid.subModuleId) : null;
+      completedModuleId = parentSub?.moduleId || vid?.subModuleId || targetItemId;
     } else if (itemType === "assignment") {
-      if (targetItemId.startsWith(`${courseId}-asm-`)) {
-        targetSubModuleId = targetItemId;
-      } else {
-        const asm = assignments.find((a) => a._id === targetItemId);
-        const sub = tutorials.find((s) => s.moduleId === asm?.moduleId);
-        targetSubModuleId = sub ? sub._id : (tutorials[0]?._id || null);
-      }
+      const asm = assignments.find((a) => a._id === targetItemId);
+      completedModuleId = asm?.moduleId || targetItemId;
     } else if (itemType === "quiz") {
-      if (targetItemId === `${courseId}-quiz-1`) {
-        targetSubModuleId = targetItemId;
-      } else {
-        const qz = quizzes.find((q) => q._id === targetItemId);
-        const sub = tutorials.find((s) => s.moduleId === qz?.moduleId);
-        targetSubModuleId = sub ? sub._id : (tutorials[0]?._id || null);
-      }
+      const qz = quizzes.find((q) => q._id === targetItemId);
+      completedModuleId = qz?.moduleId || targetItemId;
     } else if (itemType === "final-assignment") {
-      if (targetItemId === `${courseId}-final-1`) {
-        targetSubModuleId = targetItemId;
-      } else {
-        targetSubModuleId = tutorials[tutorials.length - 1]?._id || null;
-      }
+      // Final assignments — use the last module or the item itself
+      completedModuleId = targetItemId;
     }
 
-    if (!targetSubModuleId) {
-      alert("Invalid submodule context mapping.");
+    if (!completedModuleId) {
+      alert("Invalid module context mapping.");
       setSubmittingProgress(false);
       return;
     }
 
-    // Save fallback/item to localStorage
-    const userId = user?._id || user?.email || "guest";
-    const completedKey = `completed_items_${userId}_${courseId}`;
-    const completedItems = JSON.parse(localStorage.getItem(completedKey) || "[]");
-    if (!completedItems.includes(targetItemId)) {
-      completedItems.push(targetItemId);
-      localStorage.setItem(completedKey, JSON.stringify(completedItems));
-    }
-    if (!completedItems.includes(targetSubModuleId)) {
-      completedItems.push(targetSubModuleId);
-      localStorage.setItem(completedKey, JSON.stringify(completedItems));
-    }
-
-    // Determine the API target submodule ID to update on backend
-    const isFallbackId = targetSubModuleId.startsWith(courseId);
-    let apiSubModuleId = targetSubModuleId;
+    // Determine the API target — skip if it's a fallback ID
+    const isFallbackId = String(completedModuleId).startsWith(courseId);
+    let apiModuleId = completedModuleId;
 
     if (isFallbackId) {
-      // Look for a real DB submodule to represent progress
-      const realSub = tutorials.find((t) => !t._id.startsWith(courseId));
-      apiSubModuleId = realSub ? realSub._id : null;
+      // Look for a real DB module/submodule to represent progress
+      const realTut = tutorials.find((t) => !t._id.startsWith(courseId));
+      apiModuleId = realTut ? (realTut.moduleId || realTut._id) : null;
     }
 
     try {
-      if (apiSubModuleId && !enrollment.completedSubModules?.includes(apiSubModuleId)) {
-        await updateProgress(enrollment._id, apiSubModuleId);
+      if (apiModuleId) {
+        await updateProgress(enrollment._id, apiModuleId);
       }
       
+      // Re-fetch enrollment to get updated progressPercentage from backend
       const enrolls = await getMyEnrollments();
       const currentEnroll = enrolls.find((e) => e.courseId?._id === courseId || e.courseId === courseId);
       if (currentEnroll) {
@@ -412,11 +392,15 @@ const CoursePlayer = () => {
       }
     } catch (err) {
       console.error("Failed saving completion progress on backend", err);
-      // Fall back to local progress update
-      const enrolls = await getMyEnrollments();
-      const currentEnroll = enrolls.find((e) => e.courseId?._id === courseId || e.courseId === courseId);
-      if (currentEnroll) {
-        setEnrollment(currentEnroll);
+      // Re-fetch enrollment even on error to sync state
+      try {
+        const enrolls = await getMyEnrollments();
+        const currentEnroll = enrolls.find((e) => e.courseId?._id === courseId || e.courseId === courseId);
+        if (currentEnroll) {
+          setEnrollment(currentEnroll);
+        }
+      } catch (fetchErr) {
+        console.error("Failed to re-fetch enrollments", fetchErr);
       }
     } finally {
       setSubmittingProgress(false);
@@ -812,12 +796,7 @@ const CoursePlayer = () => {
   };
 
   if (loading) {
-    return (
-      <div className="player-loading">
-        <div className="lms-spinner"></div>
-        <p>Loading course player...</p>
-      </div>
-    );
+    return <Loader text="Loading course player..." />;
   }
 
   return (
@@ -1075,6 +1054,7 @@ const CoursePlayer = () => {
               {activeItem.type === "video" && (() => {
                 const currentTopic = tutorials.find(t => t._id === activeItem.data.subModuleId) || {};
                 const topicTitle = currentTopic.name || currentTopic.title || activeItem.data.title;
+                const embedUrl = getVideoEmbedUrl(activeItem.data, currentTopic);
                 return (
                   <div className="submodule-detail-body">
                     <div className="submodule-header">
@@ -1083,15 +1063,28 @@ const CoursePlayer = () => {
                       <div className="video-meta">Duration: {activeItem.data.duration || "N/A"}</div>
                     </div>
                     <div className="tab-viewport-body">
-                      <div className="video-player-frame">
-                        <iframe
-                          className="html5-video-player"
-                          src={getVideoEmbedUrl(activeItem.data, currentTopic, course?.title || "")}
-                          title={topicTitle}
-                          allowFullScreen
-                          border="0"
-                        ></iframe>
-                      </div>
+                      {embedUrl ? (
+                        <div 
+                          className="video-player-frame"
+                          onMouseEnter={() => document.body.classList.add('hide-custom-cursor')}
+                          onMouseLeave={() => document.body.classList.remove('hide-custom-cursor')}
+                        >
+                          <iframe
+                            className="html5-video-player"
+                            src={embedUrl}
+                            title={topicTitle}
+                            allowFullScreen
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            border="0"
+                          ></iframe>
+                        </div>
+                      ) : (
+                        <div className="video-player-frame empty-video-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', padding: '3rem 1rem' }}>
+                          <span style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎦</span>
+                          <h3 style={{ margin: 0, fontFamily: 'Outfit, sans-serif', color: '#1e293b' }}>Video Unavailable</h3>
+                          <p style={{ marginTop: '0.5rem', textAlign: 'center', maxWidth: '400px' }}>This video content is currently being processed or prepared. Please review the lesson notes or continue to the next module.</p>
+                        </div>
+                      )}
                       <p className="video-description-text" style={{ marginTop: "1rem", color: "#4b5563" }}>
                         {activeItem.data.description || "Watch the video presentation fully before checking completions."}
                       </p>

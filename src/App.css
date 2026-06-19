@@ -128,39 +128,46 @@ nav a:hover,
 :root.dark,
 html[data-theme="dark"],
 [data-theme="dark"] {
-  --bg-main:          #0b1120;      /* deepest background — page level    */
-  --bg-section:       #111827;      /* section backgrounds                 */
-  --bg-card:          #1e293b;      /* all cards, panels, containers       */
-  --bg-input:         #111827;      /* input fields, textareas, selects    */
-  --bg-navbar:        #0f172a;      /* navbar — slightly lighter than page */
-  --bg-footer:        #020617;      /* footer — darkest surface            */
-  --bg-hover:         #263348;      /* hover state on interactive items    */
-  --bg-active:        #2d3f55;      /* active/selected sidebar items       */
+  --dark-bg:          #050914;
+  --dark-surface:     #0f172a;
+  --dark-card:        #111c2e;
+  --dark-card-hover:  #162238;
+  --dark-border:      rgba(148, 163, 184, 0.12);
+
+  --bg-main:          var(--dark-bg);
+  --bg-section:       var(--dark-surface);
+  --bg-card:          var(--dark-card);
+  --bg-input:         var(--dark-surface);
+  --bg-navbar:        var(--dark-surface);
+  --bg-footer:        #020617;
+  --bg-hover:         var(--dark-card-hover);
+  --bg-active:        rgba(139, 92, 246, 0.15);
   --bg-overlay:       rgba(0, 0, 0, 0.6);
 
-  --text-main:        #f8fafc;      /* primary readable text               */
-  --text-muted:       #94a3b8;      /* secondary/description text          */
-  --text-placeholder: #64748b;      /* input placeholder text              */
-  --text-inverse:     #0f172a;      /* text on accent color backgrounds    */
+  --text-main:        #f8fafc;
+  --text-muted:       #94a3b8;
+  --text-label:       #cbd5e1;
+  --text-placeholder: #64748b;
+  --text-inverse:     #0f172a;
 
-  --border-color:     rgba(148, 163, 184, 0.18);  /* very subtle borders  */
-  --border-light:     rgba(148, 163, 184, 0.10);  /* very subtle borders  */
-  --border-focus:     rgba(124, 58, 237, 0.5);    /* focus ring           */
+  --border-color:     var(--dark-border);
+  --border-light:     rgba(148, 163, 184, 0.06);
+  --border-focus:     rgba(139, 92, 246, 0.5);
 
   --shadow-sm:        0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md:        0 4px 12px rgba(0, 0, 0, 0.5);
   --shadow-lg:        0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-card:      0 10px 30px rgba(0, 0, 0, 0.35);
-  --shadow-hover:     0 15px 40px rgba(0, 0, 0, 0.4);
-  --shadow-glow:      0 0 20px rgba(124, 58, 237, 0.15);
+  --shadow-card:      0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-hover:     0 8px 30px rgba(0, 0, 0, 0.4);
+  --shadow-glow:      0 0 20px rgba(139, 92, 246, 0.08);
 
-  --primary:          #7c3aed;      /* purple — same as light mode         */
-  --primary-hover:    #6d28d9;
+  --primary:          #8b5cf6;
+  --primary-hover:    #7c3aed;
   --success:          #4ade80;
   --warning:          #fbbf24;
   --error:            #f87171;
 
-  /* Compatibility mappings for previously replaced color variables in individual stylesheets */
+  /* Compatibility mappings */
   --bg-primary:       var(--bg-main);
   --bg-secondary:     var(--bg-section);
   --text-primary:     var(--text-main);
@@ -217,12 +224,21 @@ html[data-theme="dark"],
 }
 
 /* ===================================================
-   PREMIUM DARK MODE CARD HOVER EFFECT (Task 3)
+   DARK MODE — GLOBAL BORDER NUKE
+   Kills all bright white/gray borders in one sweep.
+   Individual components can override with more specific selectors.
    =================================================== */
+[data-theme="dark"] *:not(.certificate-canvas-frame):not(.certificate-canvas-frame *) {
+  border-color: var(--dark-border) !important;
+}
 
-/* Base card state — dark mode */
+/* ===================================================
+   DARK MODE — CLEAN CARD SYSTEM
+   Single flat card — no nested boxes, no shine overlays.
+   =================================================== */
 [data-theme="dark"] .course-card,
 [data-theme="dark"] .event-card,
+[data-theme="dark"] .event-workspace-card,
 [data-theme="dark"] .profile-section-card,
 [data-theme="dark"] .user-details-card,
 [data-theme="dark"] .credentials-card,
@@ -230,95 +246,33 @@ html[data-theme="dark"],
 [data-theme="dark"] .workshop-card,
 [data-theme="dark"] .dashboard-card,
 [data-theme="dark"] .department-card,
-[data-theme="dark"] .quiz-card {
-  background-color: #111827;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+[data-theme="dark"] .quiz-card,
+[data-theme="dark"] .my-events-card,
+[data-theme="dark"] .carousel-card-inner,
+[data-theme="dark"] .empty-events-card,
+[data-theme="dark"] .pathway-item {
+  background: var(--dark-card) !important;
+  background-color: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-/* Shine overlay — hidden by default */
-[data-theme="dark"] .course-card::before,
-[data-theme="dark"] .event-card::before,
-[data-theme="dark"] .profile-section-card::before,
-[data-theme="dark"] .user-details-card::before,
-[data-theme="dark"] .credentials-card::before,
-[data-theme="dark"] .certificate-badge-card::before,
-[data-theme="dark"] .workshop-card::before,
-[data-theme="dark"] .dashboard-card::before,
-[data-theme="dark"] .department-card::before,
-[data-theme="dark"] .quiz-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.12),
-    transparent 60%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Hover state & Reveal shine — dark mode */
-[data-theme="dark"] .course-card:hover::before,
-[data-theme="dark"] .event-card:hover::before,
-[data-theme="dark"] .profile-section-card:hover::before,
-[data-theme="dark"] .user-details-card:hover::before,
-[data-theme="dark"] .credentials-card:hover::before,
-[data-theme="dark"] .certificate-badge-card:hover::before,
-[data-theme="dark"] .workshop-card:hover::before,
-[data-theme="dark"] .dashboard-card:hover::before,
-[data-theme="dark"] .department-card:hover::before,
-[data-theme="dark"] .quiz-card:hover::before {
-  opacity: 1;
-}
-
-/* Ensure card content stays above the shine overlay */
-[data-theme="dark"] .course-card > *,
-[data-theme="dark"] .event-card > *,
-[data-theme="dark"] .profile-section-card > *,
-[data-theme="dark"] .user-details-card > *,
-[data-theme="dark"] .credentials-card > *,
-[data-theme="dark"] .certificate-badge-card > *,
-[data-theme="dark"] .workshop-card > *,
-[data-theme="dark"] .dashboard-card > *,
-[data-theme="dark"] .department-card > *,
-[data-theme="dark"] .quiz-card > * {
-  position: relative;
-  z-index: 2;
-}
-
-/* Hover state glow — Apply To These Specific Card Types */
+/* Hover — subtle lift, no neon glow */
 [data-theme="dark"] .course-card:hover,
 [data-theme="dark"] .event-card:hover,
+[data-theme="dark"] .event-workspace-card:hover,
 [data-theme="dark"] .profile-section-card:hover,
 [data-theme="dark"] .certificate-badge-card:hover,
 [data-theme="dark"] .workshop-card:hover,
 [data-theme="dark"] .dashboard-card:hover,
 [data-theme="dark"] .department-card:hover,
 [data-theme="dark"] .quiz-card:hover,
-[data-theme="dark"] .pathway-item:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 0 25px rgba(139, 92, 246, 0.35),
-    0 0 50px rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.4);
-}
-
-[data-theme="dark"] .course-card,
-[data-theme="dark"] .event-card,
-[data-theme="dark"] .profile-section-card,
-[data-theme="dark"] .certificate-badge-card,
-[data-theme="dark"] .workshop-card,
-[data-theme="dark"] .dashboard-card,
-[data-theme="dark"] .department-card,
-[data-theme="dark"] .pathway-item {
-  position: relative;
-  overflow: hidden;
+[data-theme="dark"] .pathway-item:hover,
+[data-theme="dark"] .carousel-card-inner:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
 }
 
 /* Smooth theme transitions — EXCLUDES transform to prevent cursor jumps */
@@ -341,10 +295,10 @@ html[data-theme="dark"],
 [data-theme="dark"] header.navbar,
 [data-theme="dark"] .lernx-navbar,
 [data-theme="dark"] .navbar-container {
-  background-color: var(--navbar-bg) !important;
-  background: var(--navbar-bg) !important;
-  border-bottom: 1px solid var(--border-color) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  background-color: var(--dark-surface) !important;
+  background: var(--dark-surface) !important;
+  border-bottom: 1px solid var(--dark-border) !important;
+  box-shadow: 0 1px 0 var(--dark-border) !important;
 }
 
 [data-theme="dark"] .navbar .logo,
@@ -422,7 +376,7 @@ html[data-theme="dark"],
 [data-theme="dark"] .navbar-action-cta-logout-btn {
   background: transparent !important;
   background-color: transparent !important;
-  border: 1px solid var(--border-color) !important;
+  border: 1px solid var(--dark-border) !important;
   color: var(--text-muted) !important;
   border-radius: 6px !important;
   padding: 0 16px !important;
@@ -439,8 +393,8 @@ html[data-theme="dark"],
 
 [data-theme="dark"] .btn-logout:hover,
 [data-theme="dark"] .navbar-action-cta-logout-btn:hover {
-  background-color: rgba(239, 68, 68, 0.1) !important;
-  border-color: rgba(239, 68, 68, 0.4) !important;
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
   color: #ef4444 !important;
 }
 
@@ -464,17 +418,16 @@ html[data-theme="dark"],
 [data-theme="dark"] .department-card,
 [data-theme="dark"] [class*="department-card"],
 [data-theme="dark"] [class*="DepartmentCard"] {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 18px !important;
+  background: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
+  border-radius: 14px !important;
   box-shadow: var(--shadow-card) !important;
 }
 
 [data-theme="dark"] .department-card:hover,
 [data-theme="dark"] [class*="department-card"]:hover {
   box-shadow: var(--shadow-hover) !important;
-  border-color: rgba(124, 58, 237, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
   transform: translateY(-2px) !important;
 }
 
@@ -561,66 +514,48 @@ html[data-theme="dark"],
 }
 
 [data-theme="dark"] .course-card,
-[data-theme="dark"] [class*="course-card"],
-[data-theme="dark"] [class*="CourseCard"],
 [data-theme="dark"] .track-card,
-[data-theme="dark"] [class*="track-card"],
-[data-theme="dark"] [class*="TrackCard"],
 [data-theme="dark"] .domain-card,
-[data-theme="dark"] [class*="domain-card"],
-[data-theme="dark"] [class*="DomainCard"],
-[data-theme="dark"] .category-card,
-[data-theme="dark"] [class*="category-card"],
-[data-theme="dark"] [class*="CategoryCard"] {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  box-shadow: var(--shadow-card) !important;
-  border-radius: 18px !important;
+[data-theme="dark"] .category-card {
+  background: linear-gradient(145deg, #111827, #172033) !important;
+  border: 1px solid var(--dark-border) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 14px !important;
 }
 
 [data-theme="dark"] .course-card:hover,
-[data-theme="dark"] [class*="course-card"]:hover,
-[data-theme="dark"] [class*="CourseCard"]:hover,
 [data-theme="dark"] .track-card:hover,
-[data-theme="dark"] [class*="track-card"]:hover,
-[data-theme="dark"] [class*="TrackCard"]:hover {
-  box-shadow: var(--shadow-hover) !important;
-  border-color: rgba(124, 58, 237, 0.3) !important;
-  transform: translateY(-2px) !important;
+[data-theme="dark"] .domain-card:hover,
+[data-theme="dark"] .category-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  transform: translateY(-3px) !important;
 }
 
 [data-theme="dark"] .course-card h3,
 [data-theme="dark"] .course-card h4,
-[data-theme="dark"] [class*="course-card"] h3,
-[data-theme="dark"] [class*="course-card"] h4,
-[data-theme="dark"] [class*="CourseCard"] h3,
-[data-theme="dark"] [class*="CourseCard"] h4,
 [data-theme="dark"] .track-card h3,
-[data-theme="dark"] [class*="track-card"] h3,
-[data-theme="dark"] [class*="TrackCard"] h3,
 [data-theme="dark"] .domain-card h3,
-[data-theme="dark"] [class*="domain-card"] h3,
-[data-theme="dark"] [class*="DomainCard"] h3,
-[data-theme="dark"] .category-card h3,
-[data-theme="dark"] [class*="category-card"] h3,
-[data-theme="dark"] [class*="CategoryCard"] h3 {
+[data-theme="dark"] .category-card h3 {
   color: #ffffff !important;
 }
 
 [data-theme="dark"] .course-card p,
-[data-theme="dark"] [class*="course-card"] p,
-[data-theme="dark"] [class*="CourseCard"] p,
 [data-theme="dark"] .course-card span,
-[data-theme="dark"] [class*="course-card"] span,
-[data-theme="dark"] [class*="CourseCard"] span,
+[data-theme="dark"] .course-card .meta-label,
 [data-theme="dark"] .track-card p,
-[data-theme="dark"] [class*="track-card"] p,
-[data-theme="dark"] [class*="TrackCard"] p,
-[data-theme="dark"] .domain-card p,
-[data-theme="dark"] [class*="domain-card"] p,
-[data-theme="dark"] [class*="DomainCard"] p {
+[data-theme="dark"] .domain-card p {
   color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .course-card .meta-value {
+  color: var(--text-label) !important;
+}
+
+/* Remove inner borders from card meta/footer sections */
+[data-theme="dark"] .course-card-meta,
+[data-theme="dark"] .course-card-footer {
+  border-color: rgba(148, 163, 184, 0.08) !important;
 }
 
 [data-theme="dark"] .explore-link,
@@ -629,55 +564,57 @@ html[data-theme="dark"],
   color: var(--primary) !important;
 }
 
+/* Dark mode buttons — gradient purple */
 [data-theme="dark"] .course-card button,
-[data-theme="dark"] [class*="course-card"] button,
-[data-theme="dark"] [class*="enroll-btn"],
 [data-theme="dark"] .track-card button,
-[data-theme="dark"] [class*="track-card"] button {
-  background-color: var(--primary) !important;
-  background: var(--primary) !important;
+[data-theme="dark"] .btn-course-action,
+[data-theme="dark"] .btn-event-register,
+[data-theme="dark"] .btn-carousel-register,
+[data-theme="dark"] .btn-primary-action,
+[data-theme="dark"] .btn-enroll,
+[data-theme="dark"] .btn-continue {
+  background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
   color: #ffffff !important;
   border: none !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
 }
 
 [data-theme="dark"] .course-card button:hover,
-[data-theme="dark"] [class*="course-card"] button:hover,
-[data-theme="dark"] .track-card button:hover {
-  background-color: #6d28d9 !important;
-  background: #6d28d9 !important;
+[data-theme="dark"] .track-card button:hover,
+[data-theme="dark"] .btn-course-action:hover,
+[data-theme="dark"] .btn-event-register:hover,
+[data-theme="dark"] .btn-carousel-register:hover,
+[data-theme="dark"] .btn-primary-action:hover {
+  background: linear-gradient(135deg, #6d28d9, #9333ea) !important;
 }
 
 [data-theme="dark"] .course-card img,
-[data-theme="dark"] [class*="course-card"] img,
-[data-theme="dark"] [class*="CourseCard"] img,
 [data-theme="dark"] .track-card img,
-[data-theme="dark"] [class*="track-card"] img,
-[data-theme="dark"] [class*="TrackCard"] img {
+[data-theme="dark"] .event-card img,
+[data-theme="dark"] .evt-banner-img {
   filter: none !important;
   opacity: 1 !important;
 }
 
 [data-theme="dark"] [class*="progress-bar"],
 [data-theme="dark"] [class*="ProgressBar"] {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
+  background-color: rgba(148, 163, 184, 0.1) !important;
+  background: rgba(148, 163, 184, 0.1) !important;
 }
 
 /* ===================================================
    COURSE DESCRIPTION (DETAILS) PAGE THEME REBUILD
    =================================================== */
 [data-theme="dark"] .course-details-page {
-  background-color: var(--bg-main) !important;
-  background: var(--bg-main) !important;
+  background-color: var(--dark-bg) !important;
+  background: var(--dark-bg) !important;
   color: var(--text-main) !important;
 }
 
 [data-theme="dark"] .course-details-page .rounded-card {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  box-shadow: var(--shadow-card) !important;
+  background: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .course-details-page .rounded-card h3 {
@@ -693,17 +630,15 @@ html[data-theme="dark"],
 }
 
 [data-theme="dark"] .course-details-page .desc-specs-grid {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
-  border: 1px solid var(--border-color) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--dark-border) !important;
   border-radius: 12px !important;
 }
 
 [data-theme="dark"] .course-details-page .spec-icon {
-  background: var(--bg-card) !important;
-  background-color: var(--bg-card) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
   box-shadow: none !important;
-  color: #ffffff !important;
+  color: #cbd5e1 !important;
 }
 
 [data-theme="dark"] .course-details-page .spec-label {
@@ -711,19 +646,21 @@ html[data-theme="dark"],
 }
 
 [data-theme="dark"] .course-details-page .spec-value {
-  color: var(--text-main) !important;
+  color: var(--text-label) !important;
 }
 
+/* Clean accordion — no border rectangles per module */
 [data-theme="dark"] .course-details-page .syllabus-module-item {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
-  border: 1px solid var(--border-color) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--dark-border) !important;
+  border-radius: 0 !important;
 }
 
 [data-theme="dark"] .course-details-page .module-index-header {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border-bottom: 1px solid var(--border-color) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-bottom: none !important;
+  border-radius: 8px !important;
 }
 
 [data-theme="dark"] .course-details-page .mod-idx-name {
@@ -731,33 +668,31 @@ html[data-theme="dark"],
 }
 
 [data-theme="dark"] .course-details-page .submodule-preview-item {
-  border-top: 1px solid var(--border-color) !important;
+  border-top: none !important;
   color: var(--text-muted) !important;
+  padding-left: 2.5rem !important;
 }
 
 [data-theme="dark"] .course-details-page .btn-download-cert {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
   color: var(--text-main) !important;
-  border: 1px solid var(--border-color) !important;
+  border: 1px solid var(--dark-border) !important;
 }
 
 [data-theme="dark"] .course-details-page .btn-download-cert:hover {
-  background-color: var(--bg-hover) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* ===================================================
    EVENTS PAGE THEME REBUILD
    =================================================== */
 [data-theme="dark"] .events-page,
-[data-theme="dark"] [class*="events-page"],
-[data-theme="dark"] [class*="EventsPage"],
 [data-theme="dark"] .events-workspace,
 [data-theme="dark"] .events-layout-container,
 [data-theme="dark"] .all-events-section,
 [data-theme="dark"] .my-events-sidebar {
-  background-color: var(--bg-main) !important;
-  background: var(--bg-main) !important;
+  background-color: var(--dark-bg) !important;
+  background: var(--dark-bg) !important;
 }
 
 [data-theme="dark"] .events-page h1,
@@ -777,38 +712,14 @@ html[data-theme="dark"],
   color: var(--text-muted) !important;
 }
 
-[data-theme="dark"] .event-card,
-[data-theme="dark"] [class*="event-card"],
-[data-theme="dark"] [class*="EventCard"],
-[data-theme="dark"] .event-workspace-card,
-[data-theme="dark"] .my-events-card,
-[data-theme="dark"] .reserved-events-container,
-[data-theme="dark"] [class*="reserved"],
-[data-theme="dark"] [class*="Reserved"],
-[data-theme="dark"] [class*="my-events"],
-[data-theme="dark"] [class*="MyEvents"] {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  box-shadow: var(--shadow-card) !important;
-  border-radius: 18px !important;
-  color: var(--text-main) !important;
-}
-
 [data-theme="dark"] .event-card-body h3,
 [data-theme="dark"] .event-card h3,
-[data-theme="dark"] [class*="event-card"] h3,
-[data-theme="dark"] .event-card h4,
-[data-theme="dark"] [class*="EventCard"] h3,
-[data-theme="dark"] [class*="EventCard"] h4 {
+[data-theme="dark"] .event-card h4 {
   color: #ffffff !important;
 }
 
 [data-theme="dark"] .event-card p,
-[data-theme="dark"] [class*="event-card"] p,
 [data-theme="dark"] .event-card span,
-[data-theme="dark"] [class*="EventCard"] p,
-[data-theme="dark"] [class*="EventCard"] span,
 [data-theme="dark"] .event-card-body span,
 [data-theme="dark"] .evt-details-info,
 [data-theme="dark"] .evt-desc,
@@ -816,12 +727,19 @@ html[data-theme="dark"],
   color: var(--text-muted) !important;
 }
 
-[data-theme="dark"] .event-card-footer {
-  border-top: 1px solid var(--border-color) !important;
+[data-theme="dark"] .event-card-footer,
+[data-theme="dark"] .carousel-card-footer {
+  border-top: 1px solid var(--dark-border) !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .event-card-banner img,
+[data-theme="dark"] .evt-banner-img {
+  border-radius: 14px 14px 0 0 !important;
 }
 
 [data-theme="dark"] .my-event-list-item {
-  border-bottom: 1px dashed var(--border-color) !important;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.1) !important;
 }
 
 [data-theme="dark"] .my-event-list-item .item-title {
@@ -832,37 +750,18 @@ html[data-theme="dark"],
   color: var(--text-muted) !important;
 }
 
-[data-theme="dark"] .event-card button,
-[data-theme="dark"] [class*="event-card"] button,
-[data-theme="dark"] [class*="register-btn"],
-[data-theme="dark"] .btn-event-register {
-  background: var(--primary) !important;
-  background-color: var(--primary) !important;
-  color: #ffffff !important;
-  border: none !important;
-  border-radius: 8px !important;
-}
-
-[data-theme="dark"] .event-card button:hover,
-[data-theme="dark"] [class*="register-btn"]:hover,
-[data-theme="dark"] .btn-event-register:hover {
-  background: #6d28d9 !important;
-  background-color: #6d28d9 !important;
-}
-
-[data-theme="dark"] .event-card img,
-[data-theme="dark"] [class*="event-card"] img,
-[data-theme="dark"] [class*="EventCard"] img,
-[data-theme="dark"] .evt-banner-img {
-  filter: none !important;
-  opacity: 1 !important;
+[data-theme="dark"] .event-registered-badge,
+[data-theme="dark"] .registered-tick-badge {
+  background: rgba(74, 222, 128, 0.1) !important;
+  color: #4ade80 !important;
+  border: 1px solid rgba(74, 222, 128, 0.2) !important;
 }
 
 /* Home Carousel Events */
 [data-theme="dark"] .home-events-section {
-  background-color: var(--bg-main) !important;
-  background: var(--bg-main) !important;
-  border-bottom: 1px solid var(--border-color) !important;
+  background-color: var(--dark-bg) !important;
+  background: var(--dark-bg) !important;
+  border-bottom: 1px solid var(--dark-border) !important;
 }
 
 [data-theme="dark"] .home-events-left h2 {
@@ -873,13 +772,6 @@ html[data-theme="dark"],
   color: var(--text-muted) !important;
 }
 
-[data-theme="dark"] .carousel-card-inner {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  box-shadow: var(--shadow-card) !important;
-}
-
 [data-theme="dark"] .carousel-card-body h3 {
   color: #ffffff !important;
 }
@@ -888,16 +780,10 @@ html[data-theme="dark"],
   color: var(--text-muted) !important;
 }
 
-[data-theme="dark"] .carousel-card-footer {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
-  border-top: 1px solid var(--border-color) !important;
-}
-
 [data-theme="dark"] .carousel-arrow {
-  background: var(--bg-card) !important;
+  background: var(--dark-card) !important;
   color: var(--text-main) !important;
-  border: 1px solid var(--border-color) !important;
+  border: 1px solid var(--dark-border) !important;
 }
 
 [data-theme="dark"] .carousel-arrow:hover {
@@ -936,31 +822,29 @@ html[data-theme="dark"],
 [data-theme="dark"] .profile-page,
 [data-theme="dark"] [class*="profile-page"],
 [data-theme="dark"] .profile-page-wrapper {
-  background-color: var(--bg-main) !important;
-  background: var(--bg-main) !important;
+  background-color: var(--dark-bg) !important;
+  background: var(--dark-bg) !important;
 }
 
 [data-theme="dark"] .profile-card,
-[data-theme="dark"] [class*="profile-card"],
-[data-theme="dark"] [class*="ProfileCard"],
 [data-theme="dark"] .password-card,
-[data-theme="dark"] [class*="password-card"],
-[data-theme="dark"] [class*="PasswordCard"],
 [data-theme="dark"] .profile-section-card,
-[data-theme="dark"] [class*="pathway"],
-[data-theme="dark"] [class*="Pathway"],
-[data-theme="dark"] [class*="enrolled"],
-[data-theme="dark"] [class*="Enrolled"],
 [data-theme="dark"] .user-details-card,
 [data-theme="dark"] .credentials-card,
-[data-theme="dark"] .profile-enrollment-row,
-[data-theme="dark"] .profile-event-row,
 [data-theme="dark"] .certificate-badge-card {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 18px !important;
-  box-shadow: var(--shadow-card) !important;
+  background: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .profile-enrollment-row,
+[data-theme="dark"] .profile-event-row {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--dark-border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
   color: var(--text-main) !important;
 }
 
@@ -1046,115 +930,124 @@ html[data-theme="dark"],
 }
 
 [data-theme="dark"] .progress-bar-container {
-  background-color: #334155 !important;
-  background: #334155 !important;
+  background: rgba(148, 163, 184, 0.1) !important;
 }
 
 [data-theme="dark"] .progress-bar-fill {
-  background: #7c3aed !important;
-  background-color: #7c3aed !important;
+  background: linear-gradient(90deg, #7c3aed, #a855f7) !important;
 }
 
 /* ===================================================
    COURSE PLAYER THEME REBUILD
    =================================================== */
 [data-theme="dark"] .course-player,
-[data-theme="dark"] [class*="course-player"],
-[data-theme="dark"] [class*="PlayerPage"],
-[data-theme="dark"] .player-container {
-  background-color: var(--bg-main) !important;
-  background: var(--bg-main) !important;
+[data-theme="dark"] .player-container,
+[data-theme="dark"] .lms-player-container {
+  background-color: var(--dark-bg) !important;
+  background: var(--dark-bg) !important;
 }
 
 [data-theme="dark"] .player-sidebar,
-[data-theme="dark"] [class*="player-sidebar"],
-[data-theme="dark"] .lms-sidebar,
-[data-theme="dark"] [class*="course-sidebar"] {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
-  border-right: 1px solid var(--border-color) !important;
+[data-theme="dark"] .player-sidebar-wrapper,
+[data-theme="dark"] .lms-sidebar {
+  background-color: #0b1120 !important;
+  background: #0b1120 !important;
+  border-right: 1px solid var(--dark-border) !important;
 }
 
 [data-theme="dark"] .player-content-area,
-[data-theme="dark"] .content-workspace,
-[data-theme="dark"] [class*="player-content"],
-[data-theme="dark"] [class*="content-panel"] {
-  background-color: var(--bg-main) !important;
-  background: var(--bg-main) !important;
+[data-theme="dark"] .content-workspace {
+  background-color: var(--dark-bg) !important;
+  background: var(--dark-bg) !important;
 }
 
-[data-theme="dark"] .sidebar-header,
-[data-theme="dark"] [class*="sidebar-header"] {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
-  border-bottom: 1px solid var(--border-color) !important;
+[data-theme="dark"] .sidebar-header {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-bottom: 1px solid var(--dark-border) !important;
 }
 
-[data-theme="dark"] .submodule-item-row,
-[data-theme="dark"] [class*="sidebar-item"],
-[data-theme="dark"] [class*="lesson-item"] {
+[data-theme="dark"] .sidebar-footer,
+[data-theme="dark"] .sidebar-certificate-row {
+  background: transparent !important;
+  border-color: var(--dark-border) !important;
+}
+
+[data-theme="dark"] .module-trigger {
+  background: transparent !important;
+}
+
+[data-theme="dark"] .module-trigger:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+[data-theme="dark"] .module-title {
+  color: var(--text-label) !important;
+}
+
+[data-theme="dark"] .submodule-list {
+  background: transparent !important;
+}
+
+[data-theme="dark"] .submodule-item-row {
   color: var(--text-muted) !important;
-  background-color: transparent !important;
-  border-radius: 8px !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.06) !important;
+  border-radius: 0 !important;
 }
 
-[data-theme="dark"] .submodule-item-row:hover,
-[data-theme="dark"] [class*="sidebar-item"]:hover {
-  background-color: var(--bg-hover) !important;
+[data-theme="dark"] .submodule-item-row:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
   color: var(--text-main) !important;
 }
 
-[data-theme="dark"] .submodule-item-row.active,
-[data-theme="dark"] [class*="sidebar-item"].active,
-[data-theme="dark"] [class*="sidebar-item"][class*="active"] {
-  background-color: var(--bg-active) !important;
-  background: var(--bg-active) !important;
+[data-theme="dark"] .submodule-item-row.active {
+  background: rgba(139, 92, 246, 0.15) !important;
   color: #ffffff !important;
-  border-left: 3px solid var(--primary) !important;
+  border-left: 3px solid #8b5cf6 !important;
+  border-bottom-color: transparent !important;
 }
 
-[data-theme="dark"] .submodule-item-row.completed,
-[data-theme="dark"] [class*="sidebar-item"].completed {
-  color: #22c55e !important;
+[data-theme="dark"] .submodule-item-row.completed .item-text {
+  color: #4ade80 !important;
 }
 
+/* Main lesson card */
 [data-theme="dark"] .submodule-content-card,
-[data-theme="dark"] .viewer-card,
-[data-theme="dark"] .quiz-card,
-[data-theme="dark"] [class*="quiz-card"],
-[data-theme="dark"] [class*="quiz-container"],
-[data-theme="dark"] [class*="assignment"],
-[data-theme="dark"] [class*="Assignment"] {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
+[data-theme="dark"] .viewer-card {
+  background: #111827 !important;
+  border: 1px solid var(--dark-border) !important;
+  border-radius: 18px !important;
+  box-shadow: none !important;
+  color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .quiz-card {
+  background: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
   border-radius: 12px !important;
-  box-shadow: var(--shadow-card) !important;
+  box-shadow: none !important;
   color: var(--text-main) !important;
 }
 
 [data-theme="dark"] .quiz-option,
 [data-theme="dark"] [class*="quiz-option"],
 [data-theme="dark"] [class*="answer-option"] {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
-  border: 1px solid var(--border-color) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--dark-border) !important;
   color: var(--text-main) !important;
   border-radius: 8px !important;
 }
 
 [data-theme="dark"] .quiz-option:hover,
 [data-theme="dark"] [class*="quiz-option"]:hover {
-  background-color: var(--bg-hover) !important;
-  background: var(--bg-hover) !important;
-  border-color: rgba(124, 58, 237, 0.4) !important;
+  background: rgba(139, 92, 246, 0.1) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
 }
 
 [data-theme="dark"] .quiz-option.selected,
 [data-theme="dark"] [class*="quiz-option"].selected {
-  background-color: rgba(124, 58, 237, 0.2) !important;
-  background: rgba(124, 58, 237, 0.2) !important;
-  border-color: var(--primary) !important;
+  background: rgba(139, 92, 246, 0.15) !important;
+  border-color: #8b5cf6 !important;
   color: #ffffff !important;
 }
 
@@ -1171,11 +1064,11 @@ html[data-theme="dark"],
 
 [data-theme="dark"] [class*="assignment"] textarea,
 [data-theme="dark"] [class*="submission"] textarea,
-[data-theme="dark"] [class*="submission"] input {
-  background-color: var(--bg-section) !important;
-  background: var(--bg-section) !important;
+[data-theme="dark"] [class*="submission"] input,
+[data-theme="dark"] .answer-area {
+  background: var(--dark-surface) !important;
   color: #ffffff !important;
-  border: 1px solid var(--border-color) !important;
+  border: 1px solid var(--dark-border) !important;
   border-radius: 8px !important;
 }
 
@@ -1185,11 +1078,10 @@ html[data-theme="dark"],
 [data-theme="dark"] .certificate-card,
 [data-theme="dark"] .certificate-container,
 [data-theme="dark"] .cert-outer-border {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
-  border: 2px solid var(--border-color) !important;
+  background: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
   color: #ffffff !important;
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
 [data-theme="dark"] .certificate-title,

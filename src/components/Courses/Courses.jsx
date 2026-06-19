@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useNavigate} from "react-router-dom";
+import Loader from "../Loader/Loader";
 import "./Courses.css";
 
 
@@ -545,12 +546,7 @@ history.slice(0,-1)
 
 
 
-
-if(loading)
-
-return null;
-
-
+if(loading) return <Loader text="Loading Courses..." />;
 
 
 

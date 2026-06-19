@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getCourseDetails, getModules, getSubModules } from "../api/courseApi";
-import { getMyEnrollments, enrollInCourse } from "../api/enrollmentApi";
-import { generateCertificate, getMyCertificates } from "../api/certificateApi";
+import { getCourseDetails, getModules, getSubModules } from "../services/courseApi";
+import { getMyEnrollments, enrollInCourse } from "../services/enrollmentApi";
+import { generateCertificate, getMyCertificates } from "../services/certificateApi";
 import ProgressBar from "../components/ProgressBar";
 import { normalizeArray } from "../utils/normalizeArray";
 import "./CourseDetails.css";
@@ -127,11 +127,11 @@ const CourseDetails = () => {
     }
   };
 
-  if (loading) {
+  if (!course) {
     return (
       <div className="course-details-loading">
-        <div className="spinner-large"></div>
-        <p>Assembling course materials...</p>
+        <div className="loader"></div>
+        <p>Loading course information...</p>
       </div>
     );
   }
@@ -174,6 +174,12 @@ const CourseDetails = () => {
               <span className="block-label">Status</span>
               <span className="block-value">{course.status || "Active"}</span>
             </div>
+            {course.totalModules !== undefined && (
+              <div className="meta-block">
+                <span className="block-label">Modules</span>
+                <span className="block-value">{course.totalModules}</span>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -236,6 +242,11 @@ const CourseDetails = () => {
                         <span className="mod-idx-badge">Module {index + 1}</span>
                         <span className="mod-idx-name">{mod.name}</span>
                       </div>
+                      {mod.notes && (
+                        <p className="module-notes-text" style={{ fontSize: "0.85rem", color: "#64748b", margin: "0.5rem 0 0.75rem 2.5rem", fontStyle: "italic" }}>
+                          📝 {mod.notes}
+                        </p>
+                      )}
                       <ul className="submodule-preview-list">
                         {normalizeArray(mod.subModules).map((sub) => (
                           <li key={sub._id} className="submodule-preview-item">

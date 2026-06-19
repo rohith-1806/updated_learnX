@@ -1,8 +1,18 @@
 import apiClient from "./apiClient";
 
+export const registerUser = async (name, email, password) => {
+  const response = await apiClient.post("/auth/register", { name, email, password });
+  return response.data; // Expected: { success, token, user }
+};
+
 export const loginUser = async (email, password) => {
-  const response = await apiClient.post("/user/login", { email, password });
-  return response.data; // Expected response structure: { success, token, user }
+  const response = await apiClient.post("/auth/login", { email, password });
+  return response.data; // Expected: { success, token, user }
+};
+
+export const getMe = async () => {
+  const response = await apiClient.get("/auth/me");
+  return response.data; // Expected: { success, user: { name, email, role, isVerified, ... } }
 };
 
 export const changePassword = async (newPassword) => {

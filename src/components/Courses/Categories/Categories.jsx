@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useParams,useNavigate} from "react-router-dom";
+import Loader from "../../Loader/Loader";
 import "./Categories.css";
 
 
@@ -131,7 +132,7 @@ getCategories();
 
 
 
-if(loading)return null;
+if(loading)return <Loader text="Loading Categories..." />;
 
 
 

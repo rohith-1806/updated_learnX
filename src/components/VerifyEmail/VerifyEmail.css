@@ -158,43 +158,4 @@ color:#22c55e!important;
 }
 
 
-
-.loader{
-
-
-width:45px;
-
-height:45px;
-
-
-border-radius:50%;
-
-
-border:5px solid #ddd;
-
-
-border-top-color:#7c3aed;
-
-
-margin:auto;
-
-
-animation:spin 1s linear infinite;
-
-
-}
-
-
-
-@keyframes spin{
-
-
-100%{
-
-
-transform:rotate(360deg);
-
-
-}
-
-}
+

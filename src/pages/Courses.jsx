@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getDepartments, getCategories, getDomains, getTracks } from "../api/hierarchyApi";
-import { getCourses } from "../api/courseApi";
-import { getMyEnrollments, enrollInCourse } from "../api/enrollmentApi";
+import { getDepartments, getCategories, getDomains } from "../services/hierarchyApi";
+import { getCourses } from "../services/courseApi";
+import { getMyEnrollments, enrollInCourse } from "../services/enrollmentApi";
 import CourseCard from "../components/CourseCard";
+import Loader from "../components/Loader/Loader";
 import "./Courses.css";
 
 const Courses = () => {
   const navigate = useNavigate();
   const location = useLocation();
   // Navigation states
-  // level 0: Departments, 1: Categories, 2: Domains, 3: Tracks, 4: Courses
+  // level 0: Departments, 1: Categories, 2: Domains, 3: Courses
   const [level, setLevel] = useState(0);
   const [history, setHistory] = useState([]); // Array of { level, items, title }
 
-  const [items, setItems] = useState([]); // Current level items (depts, cats, domains, etc.)
+  const [items, setItems] = useState([]); // Current level items (depts, cats, domains, courses)
   const [title, setTitle] = useState("Explore Categories");
   const [loading, setLoading] = useState(true);
   const [enrollments, setEnrollments] = useState([]);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const savedState = sessionStorage.getItem("courses_state");
@@ -64,7 +64,6 @@ const Courses = () => {
 
   const loadInitialData = async () => {
     setLoading(true);
-    setError(null);
     try {
       const depts = await getDepartments();
 
@@ -106,7 +105,7 @@ const Courses = () => {
       }
     } catch (err) {
       console.error("Failed to load initial courses hierarchy", err);
-      setError("Failed to connect to the learning hierarchy server.");
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -114,7 +113,6 @@ const Courses = () => {
 
   const handleCardClick = async (item) => {
     setLoading(true);
-    setError(null);
 
     // Save current state in history before proceeding
     const previousState = {
@@ -142,25 +140,15 @@ const Courses = () => {
         setLevel(2);
         setTitle(newTitle);
       } else if (level === 2) {
-        // Domain clicked -> fetch Tracks
-        result = await getTracks(item._id);
+        // Domain clicked -> fetch Courses
+        result = await getCourses(item._id);
         setItems(result);
         setLevel(3);
-        setTitle(newTitle);
-      } else if (level === 3) {
-        // Track clicked -> fetch Courses and navigate directly to Course Details
-        result = await getCourses(item._id);
-        if (result && result.length > 0) {
-          navigate(`/course/${result[0]._id}`);
-        } else {
-          setItems([]);
-          setLevel(4);
-          setTitle(`${newTitle} Pathway`);
-        }
+        setTitle(`${newTitle} Courses`);
       }
     } catch (err) {
       console.error("Error fetching sub-hierarchy", err);
-      setError("Failed to fetch curriculum levels.");
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -176,7 +164,6 @@ const Courses = () => {
     setLevel(previousState.level);
     setTitle(previousState.title);
     setHistory(history.slice(0, -1));
-    setError(null);
   };
 
   const handleEnroll = async (courseId) => {
@@ -232,27 +219,14 @@ const Courses = () => {
             {level === 0 && "Select a learning domain path below to browse custom syllabus topics."}
             {level === 1 && "Browse specialized disciplines under this study track."}
             {level === 2 && "Choose a subject area to narrow down learning pathways."}
-            {level === 3 && "Select a career track path to load enrollment courses."}
-            {level === 4 && "Choose from our verified expert course tracks to start learning."}
+            {level === 3 && "Choose from our verified expert course tracks to start learning."}
           </p>
         </div>
       </div>
 
       <div className="courses-main-viewport">
         {loading ? (
-          <div className="viewport-loading-state">
-            <div className="lms-spinner"></div>
-            <p>Retrieving syllabus pathways...</p>
-          </div>
-        ) : error ? (
-          <div className="viewport-error-state">
-            <div className="error-icon">⚠️</div>
-            <h3>Curriculum Synced Issues</h3>
-            <p>{error}</p>
-            <button className="btn-lms-retry" onClick={loadInitialData}>
-              Retry Load
-            </button>
-          </div>
+          <Loader text="Retrieving syllabus pathways..." />
         ) : items.length === 0 ? (
           <div className="viewport-empty-state">
             <div className="empty-icon">📁</div>
@@ -264,8 +238,8 @@ const Courses = () => {
               </button>
             )}
           </div>
-        ) : level === 4 ? (
-          // Level 4 renders Course Cards
+        ) : level === 3 ? (
+          // Level 3 renders Course Cards
           <div className="courses-catalog-grid">
             {items.map((course) => {
               const enrollment = enrollments.find((e) => e.courseId?._id === course._id || e.courseId === course._id);

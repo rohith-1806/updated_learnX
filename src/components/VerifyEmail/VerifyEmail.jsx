@@ -9,7 +9,7 @@ import {
   useNavigate
 } from "react-router-dom";
 
-import API from "../../Services/eventApi";
+import API from "../../services/eventApi";
 
 import "./VerifyEmail.css";
 

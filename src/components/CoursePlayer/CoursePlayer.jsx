@@ -6,7 +6,7 @@ import {
     getVideos, 
     getMyEnrollments, 
     updateProgress 
-} from '../api/courseContentApi'; 
+} from '../../services/courseContentApi'; 
 import './CoursePlayer.css';
 
 const CoursePlayer = () => {

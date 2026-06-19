@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useParams,useNavigate} from "react-router-dom";
+import Loader from "../../Loader/Loader";
 import "./Domains.css";
 
 
@@ -128,7 +129,7 @@ getDomains();
 
 
 
-if(loading)return null;
+if(loading)return <Loader text="Loading Domains..." />;
 
 
 

@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useParams,useNavigate} from "react-router-dom";
+import Loader from "../../Loader/Loader";
 import "./Tracks.css";
 
 
@@ -134,7 +135,7 @@ getTracks();
 
 
 
-if(loading)return null;
+if(loading)return <Loader text="Loading Tracks..." />;
 
 
 

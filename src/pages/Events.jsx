@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { getUserEvents, registerForEvent, getMyEvents } from "../api/authApi";
+import { getUserEvents, registerForEvent, getMyEvents } from "../services/authApi";
 import { useAuth } from "../context/AuthContext";
 import "./Events.css";
 
@@ -120,7 +120,7 @@ const Events = ({ home = false }) => {
   if (loading) {
     return (
       <div className="events-loading-panel">
-        <div className="spinner-large"></div>
+        <div className="loader"></div>
         <p>Syncing event schedules...</p>
       </div>
     );

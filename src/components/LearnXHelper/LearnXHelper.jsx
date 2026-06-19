@@ -1,33 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { qaPairs, defaultResponse } from "./knowledgeBase";
+import { sendChatMessage } from "../../services/chatbotApi";
 import "./LearnXHelper.css";
 
 const initialMessage = {
   id: 1,
-  text: "Hi 👋 I am LearnX Helper.\nHow can I help your learning today?",
+  text: "Hi 👋 I am LernX Assistant. How can I help you?",
   sender: "bot",
-};
-
-const getBotResponse = (text) => {
-  const lowerText = text.toLowerCase();
-  
-  let bestMatch = null;
-  let maxScore = 0;
-  
-  for (const pair of qaPairs) {
-    let score = 0;
-    for (const kw of pair.keywords) {
-      // Give more weight to exact keyword matches or substring matches
-      if (lowerText.includes(kw)) score++;
-    }
-    if (score > maxScore) {
-      maxScore = score;
-      bestMatch = pair.answer;
-    }
-  }
-  
-  if (bestMatch && maxScore > 0) return bestMatch;
-  return defaultResponse;
 };
 
 const LearnXHelper = () => {
@@ -61,7 +39,7 @@ const LearnXHelper = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputValue.trim() === "") return;
 
     const userMsg = {
@@ -71,20 +49,33 @@ const LearnXHelper = () => {
     };
 
     setMessages((prev) => [...prev, userMsg]);
+    const userText = inputValue.trim();
     setInputValue("");
     setIsTyping(true);
 
-    // Simulate network delay for bot typing
-    setTimeout(() => {
-      const botResponseText = getBotResponse(userMsg.text);
+    try {
+      // Call backend AI helper API
+      const data = await sendChatMessage(userText);
+      const botResponseText = data.response || data.answer || data.solution || data.reply || data.message || "I'm not sure how to respond to that.";
+
       const botMsg = {
         id: Date.now() + 1,
         text: botResponseText,
         sender: "bot",
       };
       setMessages((prev) => [...prev, botMsg]);
+    } catch (err) {
+      console.error("Helper API failed:", err);
+      // Fallback strictly to unavailability message
+      const botMsg = {
+        id: Date.now() + 1,
+        text: "Sorry, I couldn't connect right now.",
+        sender: "bot",
+      };
+      setMessages((prev) => [...prev, botMsg]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -99,11 +90,8 @@ const LearnXHelper = () => {
       <div className={`learnx-chat-window ${isOpen ? "open" : "closed"}`}>
         <div className="learnx-chat-header">
           <div className="learnx-chat-header-info">
-            <div className="learnx-chat-avatar">
-              <span className="sparkle-icon">✨</span>
-            </div>
             <div>
-              <h3 className="learnx-chat-title">🤖 LearnX Helper</h3>
+              <h3 className="learnx-chat-title">🤖 LernX Assistant</h3>
               <p className="learnx-chat-subtitle">AI Learning Assistant • Online</p>
             </div>
           </div>
@@ -135,7 +123,7 @@ const LearnXHelper = () => {
                 <span></span>
                 <span></span>
               </div>
-              <div className="typing-text">LearnX Helper is typing...</div>
+              <div className="typing-text">LernX Assistant is typing...</div>
             </div>
           )}
           <div ref={messagesEndRef} />
@@ -145,7 +133,7 @@ const LearnXHelper = () => {
           <input
             type="text"
             className="learnx-chat-input"
-            placeholder="Ask LearnX Helper..."
+            placeholder="Ask LernX Assistant..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -153,7 +141,7 @@ const LearnXHelper = () => {
           <button
             className="learnx-chat-send-btn"
             onClick={handleSendMessage}
-            disabled={!inputValue.trim()}
+            disabled={!inputValue.trim() || isTyping}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -175,7 +163,7 @@ const LearnXHelper = () => {
 
       {/* Floating Button Wrapper */}
       <div className="learnx-floating-wrapper">
-        <div className="learnx-tooltip">Ask LearnX Helper</div>
+        <div className="learnx-tooltip">Ask LernX Assistant</div>
         <button className="chatbot-launcher" onClick={toggleChat}>
             <span className="robot-emoji">🤖</span>
             <span className="online-dot"></span>

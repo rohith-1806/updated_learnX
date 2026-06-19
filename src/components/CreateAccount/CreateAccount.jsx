@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./CreateAccount.css";
 
 const CreateAccount = () => {
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -9,68 +13,47 @@ const CreateAccount = () => {
     password: "",
   });
 
-  const handleChange = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
+  const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setErrorMsg("");
   };
 
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
 
-    const users =
-      JSON.parse(localStorage.getItem("users")) || [];
-
-    // CHECK EXISTING USER
-
-    const existingUser = users.find(
-      (user) => user.email === formData.email
-    );
-
-    if (existingUser) {
-
-      alert("User already exists");
-
-      return;
+    try {
+      await register(formData.name, formData.email, formData.password);
+      alert("Account Created Successfully! Please login.");
+      navigate("/user-login");
+    } catch (error) {
+      console.error("Registration Error:", error);
+      setErrorMsg(error.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    // NEW USER
-
-    const newUser = {
-      id: Date.now(),
-
-      name: formData.name,
-
-      email: formData.email,
-
-      password: formData.password,
-    };
-
-    users.push(newUser);
-
-    localStorage.setItem(
-      "users",
-      JSON.stringify(users)
-    );
-
-    alert("Account Created Successfully");
-
-    window.location.href = "/user-login";
   };
 
   return (
-
     <div className="create-account-container">
-
       <form
         className="create-account-form"
         onSubmit={handleSubmit}
       >
-
         <h1>Create Account</h1>
+
+        {errorMsg && (
+          <p style={{ color: "#ef4444", fontSize: "0.9rem", marginBottom: "0.5rem", textAlign: "center" }}>
+            {errorMsg}
+          </p>
+        )}
 
         <input
           type="text"
@@ -99,12 +82,10 @@ const CreateAccount = () => {
           required
         />
 
-        <button type="submit">
-          Create Account
+        <button type="submit" disabled={loading}>
+          {loading ? "Creating Account..." : "Create Account"}
         </button>
-
       </form>
-
     </div>
   );
 };
