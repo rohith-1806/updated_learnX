@@ -109,7 +109,7 @@ export const updateProgress = async (
  const res = await API.put(
     `/enrollments/${enrollmentId}/progress`,
     {
-      subModuleId: subModuleId
+      completedModuleId: subModuleId
     }
  );
 

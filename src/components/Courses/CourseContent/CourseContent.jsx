@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from "react";
 import {useParams,useNavigate} from "react-router-dom";
 import { normalizeArray, safeRender } from "../../../utils/normalizeArray";
-import Loader from "../../Loader/Loader";
+import SkeletonLoader from "../../common/SkeletonLoader";
 import "./CourseContent.css";
 
 
@@ -286,7 +286,7 @@ return "https://images.unsplash.com/photo-1498050108023-c5249f4df085";
 
 
 
-if(loading)return <Loader text="Loading Course Content..." />;
+if(loading)return <SkeletonLoader count={4} type="course" />;
 
 
 

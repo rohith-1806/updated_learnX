@@ -4,7 +4,7 @@ import { getDepartments, getCategories, getDomains } from "../services/hierarchy
 import { getCourses } from "../services/courseApi";
 import { getMyEnrollments, enrollInCourse } from "../services/enrollmentApi";
 import CourseCard from "../components/CourseCard";
-import Loader from "../components/Loader/Loader";
+import PageLoader from "../components/common/PageLoader";
 import "./Courses.css";
 
 const Courses = () => {
@@ -19,6 +19,7 @@ const Courses = () => {
   const [title, setTitle] = useState("Explore Categories");
   const [loading, setLoading] = useState(true);
   const [enrollments, setEnrollments] = useState([]);
+
 
   useEffect(() => {
     const savedState = sessionStorage.getItem("courses_state");
@@ -226,7 +227,7 @@ const Courses = () => {
 
       <div className="courses-main-viewport">
         {loading ? (
-          <Loader text="Retrieving syllabus pathways..." />
+          <PageLoader text="Loading Courses..." />
         ) : items.length === 0 ? (
           <div className="viewport-empty-state">
             <div className="empty-icon">📁</div>

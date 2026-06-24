@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useParams,useNavigate} from "react-router-dom";
-import Loader from "../../Loader/Loader";
+import SkeletonLoader from "../../common/SkeletonLoader";
 import "./Tracks.css";
 
 
@@ -135,7 +135,7 @@ getTracks();
 
 
 
-if(loading)return <Loader text="Loading Tracks..." />;
+if(loading)return <SkeletonLoader count={4} type="course" />;
 
 
 

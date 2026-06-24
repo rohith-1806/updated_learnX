@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from "react";
 import {useNavigate} from "react-router-dom";
-import Loader from "../Loader/Loader";
+import SkeletonLoader from "../common/SkeletonLoader";
+import PageLoader from "../common/PageLoader";
 import "./Courses.css";
 
 
@@ -546,7 +547,10 @@ history.slice(0,-1)
 
 
 
-if(loading) return <Loader text="Loading Courses..." />;
+if(loading) {
+  if (home) return <PageLoader />;
+  return <SkeletonLoader count={8} type="course" />;
+}
 
 
 

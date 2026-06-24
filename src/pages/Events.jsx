@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { getUserEvents, registerForEvent, getMyEvents } from "../services/authApi";
 import { useAuth } from "../context/AuthContext";
+import SkeletonLoader from "../components/common/SkeletonLoader";
+import PageLoader from "../components/common/PageLoader";
+import { getSkeletonCount, saveSkeletonCount } from "../utils/skeletonCountCache";
 import "./Events.css";
 
 const Events = ({ home = false }) => {
@@ -10,6 +13,15 @@ const Events = ({ home = false }) => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // SKELETON AUDIT RESULT:
+  // Page: Events standalone (/events page)
+  // Real card count: dynamic — events.map() at line 314 renders ALL events from getUserEvents(), no slice/limit
+  // Count type: dynamic-by-API-response
+  // Previous skeleton count: hardcoded 6
+  // New skeleton count source: cache key 'events-page' with fallback 6
+  // Verified by: reading events.map() on line 314 — renders full events array, no cap
+  const [skeletonCount] = useState(() => getSkeletonCount('events-page', 6));
 
   // Carousel slider state
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -55,7 +67,10 @@ const Events = ({ home = false }) => {
     setError(null);
     try {
       const allEvents = await getUserEvents();
-      setEvents(Array.isArray(allEvents) ? allEvents : []);
+      const eventsArray = Array.isArray(allEvents) ? allEvents : [];
+      setEvents(eventsArray);
+      // Save real count so skeleton matches exactly on next load
+      saveSkeletonCount('events-page', eventsArray.length);
 
       const token = localStorage.getItem("token") || localStorage.getItem("userToken");
       if (token && token !== "null" && token !== "undefined" && token.trim() !== "") {
@@ -117,11 +132,27 @@ const Events = ({ home = false }) => {
     startAutoSlide();
   };
 
+  // HOME PAGE: ring loader only — zero skeleton cards
+  if (loading && home) {
+    return <PageLoader />;
+  }
+
+  // STANDALONE /events PAGE: skeleton cards while loading
   if (loading) {
     return (
-      <div className="events-loading-panel">
-        <div className="loader"></div>
-        <p>Syncing event schedules...</p>
+      <div className="events-workspace">
+        <section className="events-hero-section">
+          <div className="hero-content">
+            <h1>Workshops & Events</h1>
+            <p>Join live, expert-led training sessions to gain competitive industry skills.</p>
+          </div>
+        </section>
+        <div className="events-layout-container">
+          <main className="all-events-section">
+            <h2 className="section-heading-premium">Upcoming Schedules</h2>
+            <SkeletonLoader count={skeletonCount} type="event" />
+          </main>
+        </div>
       </div>
     );
   }

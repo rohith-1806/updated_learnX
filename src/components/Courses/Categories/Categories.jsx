@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useParams,useNavigate} from "react-router-dom";
-import Loader from "../../Loader/Loader";
+import SkeletonLoader from "../../common/SkeletonLoader";
 import "./Categories.css";
 
 
@@ -132,7 +132,7 @@ getCategories();
 
 
 
-if(loading)return <Loader text="Loading Categories..." />;
+if(loading)return <SkeletonLoader count={4} type="department" />;
 
 
 

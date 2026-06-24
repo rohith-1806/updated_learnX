@@ -1,6 +1,11 @@
 /* ================================================
    LIGHT MODE VARIABLES (already working — do not change)
    ================================================ */
+/* Global compact scale: reduces all rem-based sizes by ~6-7% */
+html {
+  font-size: 93.75%; /* 15px base instead of 16px */
+}
+
 :root,
 [data-theme="light"] {
   --bg-main:          #ffffff;
@@ -45,21 +50,17 @@ body{background-color:var(--bg-secondary);color:var(--text-primary);transition: 
 a{text-decoration:none}
 button{cursor:pointer;transition:background-color .3s ease, color .3s ease, border-color .3s ease, box-shadow .3s ease;}
 
-/* ── CURSOR FIX: Navbar elements must NEVER translateY on hover ──
-   translateY shifts the element under the hidden cursor, creating
-   the illusion of the custom cursor "jumping". */
-.lernx-navbar button:hover,
-.lernx-navbar a:hover,
-.navbar-container button:hover,
-.navbar-container a:hover,
-nav button:hover,
-nav a:hover,
-.nav-link:hover,
-.btn-logout:hover,
-.btn-login:hover,
-.btn-signup:hover,
-.profile-icon-btn:hover {
-  transform: none !important;
+/* Premium Click Experience */
+button, .btn, .nav-link, .nav-deck-link-item, .navbar-cta-btn-link, .btn-logout, .profile-icon-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button:hover, .btn:hover, .nav-link:hover, .navbar-cta-btn-link.filled-primary-btn:hover {
+  transform: translateY(-2px);
+}
+
+button:active, .btn:active, .nav-link:active, .navbar-cta-btn-link:active, .btn-logout:active {
+  transform: scale(0.97) !important;
 }
 
 /* ================================================

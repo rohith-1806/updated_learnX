@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { getMyEnrollments } from "../services/enrollmentApi";
 import { getMyEvents } from "../services/authApi";
 import { getMyCertificates } from "../services/certificateApi";
 import { getModules } from "../services/courseApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
-import Loader from "../components/Loader/Loader";
+import PageLoader from "../components/common/PageLoader";
 import "./Profile.css";
 
 const cleanCourseName = (name, description) => {
-  if (name === "HTML Complete Tutorial") return "HTML";
+  const invalidNames = ["Tutorials", "Videos", "Assignments", "Quizzes", "Projects", "Modules"];
+  if (invalidNames.includes(name)) return null;
+
+  if (name === "HTML Complete Tutorial") return "HTML Complete Course";
+  
   if (description) {
     const parts = description.split(/\s+content\s+for\s+/i);
     if (parts.length > 1) {
@@ -32,13 +36,6 @@ const cleanCourseName = (name, description) => {
       return trackName;
     }
   }
-  if (name === "Tutorials" || name === "Videos" || name === "Assignments" || name === "Quizzes" || name === "Projects") {
-    if (description && description.includes("HTML")) return "HTML";
-    if (description && description.includes("CSS")) return "CSS";
-    if (description && description.includes("JavaScript")) return "JavaScript";
-    if (description && description.includes("React")) return "React";
-    if (description && description.includes("Node")) return "Node.js";
-  }
   return name || "";
 };
 
@@ -46,6 +43,7 @@ const Profile = () => {
   const { user, updatePassword, certificates, setCertificates } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [enrollments, setEnrollments] = useState([]);
   const [events, setEvents] = useState([]);
@@ -66,16 +64,8 @@ const Profile = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (!localStorage.getItem("token") && !localStorage.getItem("userToken")) {
-      navigate("/user-login");
-      return;
-    }
-    fetchProfileData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const fetchProfileData = async () => {
+  // Wrap fetchProfileData in useCallback so we can use it safely in effects
+  const fetchProfileData = useCallback(async () => {
     setLoading(true);
     try {
       const activeEnrollments = await getMyEnrollments();
@@ -85,7 +75,17 @@ const Profile = () => {
         const courseDetail = enroll.courseId;
         if (!courseDetail) return;
         
-        const cName = enroll.course?.title || enroll.course?.name || cleanCourseName(courseDetail.name || courseDetail.title || (typeof courseDetail === "string" ? courseDetail : ""), courseDetail.description);
+        const rawName = enroll.course?.title || enroll.course?.name || courseDetail.name || courseDetail.title || (typeof courseDetail === "string" ? courseDetail : "");
+        const invalidNames = ["Tutorials", "Videos", "Assignments", "Quizzes", "Projects", "Modules"];
+
+        // Always keep completed courses — never filter them out even if raw name matches an invalid label
+        const currentProgress = enroll.progress !== undefined ? enroll.progress : (enroll.progressPercentage || 0);
+        const isCompleted100 = currentProgress === 100;
+
+        // Skip sub-modules/invalid names only when course is NOT yet completed
+        if (!isCompleted100 && invalidNames.includes(rawName)) return;
+
+        const cName = cleanCourseName(rawName, courseDetail.description);
         if (!cName) return;
 
         const existing = uniqueEnrollmentsMap.get(cName);
@@ -93,10 +93,10 @@ const Profile = () => {
           uniqueEnrollmentsMap.set(cName, enroll);
         } else {
           const existingProgress = existing.progress !== undefined ? existing.progress : (existing.progressPercentage || 0);
-          const currentProgress = enroll.progress !== undefined ? enroll.progress : (enroll.progressPercentage || 0);
           const existingTime = new Date(existing.updatedAt || existing.createdAt || 0).getTime();
           const currentTime = new Date(enroll.updatedAt || enroll.createdAt || 0).getTime();
           
+          // Always prefer the higher progress; on tie, prefer more recent
           if (currentProgress > existingProgress || (currentProgress === existingProgress && currentTime > existingTime)) {
             uniqueEnrollmentsMap.set(cName, enroll);
           }
@@ -136,7 +136,28 @@ const Profile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Re-fetch whenever user navigates TO profile page (e.g. back from CoursePlayer)
+  useEffect(() => {
+    if (!localStorage.getItem("token") && !localStorage.getItem("userToken")) {
+      navigate("/user-login");
+      return;
+    }
+    fetchProfileData();
+  }, [location.key, fetchProfileData, navigate]);
+
+  // Also re-fetch on browser tab regain focus so progress is always fresh
+  useEffect(() => {
+    const handleFocus = () => {
+      if (localStorage.getItem("token") || localStorage.getItem("userToken")) {
+        fetchProfileData();
+      }
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [fetchProfileData]);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -168,7 +189,7 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <Loader text="Retrieving user dashboard data..." />;
+    return <PageLoader />;
   }
 
   return (
@@ -262,7 +283,10 @@ const Profile = () => {
                   const courseDetail = enroll.courseId;
                   if (!courseDetail) return null;
                   const courseId = courseDetail._id || courseDetail;
-                  let progressVal = enroll.progress || 0;
+                  // Backend progress is the single source of truth
+                  const progressVal = enroll.progress !== undefined
+                    ? enroll.progress
+                    : (enroll.progressPercentage || 0);
 
                   return (
                     <div className="profile-enrollment-row" key={enroll._id}>
@@ -307,7 +331,10 @@ const Profile = () => {
                   if (!courseDetail) return null;
                   return (
                     <div className="certificate-badge-card" key={cert._id}>
-                      <div className="cert-ribbon">🏆</div>
+                      <svg className="cert-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="8" r="6"></circle>
+                        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+                      </svg>
                       <h4>{cleanCourseName(courseDetail.name, courseDetail.description)}</h4>
                       <p className="cert-meta-txt">Issued: {cert.createdAt ? new Date(cert.createdAt).toLocaleDateString() : "Recently"}</p>
                       <button
@@ -344,8 +371,22 @@ const Profile = () => {
                       <div className="evt-row-main">
                         <h4>{evtDetail.title || evtDetail.name}</h4>
                         <div className="evt-row-meta">
-                          <span>📅 {evtDetail.date ? new Date(evtDetail.date).toLocaleDateString() : "TBA"}</span>
-                          <span>📍 {evtDetail.location || "Online"}</span>
+                          <span className="evt-meta-item">
+                            <svg className="evt-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
+                              <line x1="16" x2="16" y1="2" y2="6"></line>
+                              <line x1="8" x2="8" y1="2" y2="6"></line>
+                              <line x1="3" x2="21" y1="10" y2="10"></line>
+                            </svg>
+                            {evtDetail.date ? new Date(evtDetail.date).toLocaleDateString() : "TBA"}
+                          </span>
+                          <span className="evt-meta-item">
+                            <svg className="evt-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                              <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            {evtDetail.location || "Online"}
+                          </span>
                         </div>
                       </div>
                       <span className={`evt-category-pill ${evtDetail.category?.toLowerCase() === "it" ? "it" : "non-it"}`}>

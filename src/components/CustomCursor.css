@@ -1,60 +1,66 @@
-/* =====================================
-   CORE ARROW CURSOR
-   ===================================== */
-
 .cursor-arrow-wrapper {
   position: fixed;
-  top: -3px; /* slight offset to perfectly align SVG tip with real mouse pointer */
+  top: -3px; 
   left: -3px;
   pointer-events: none !important;
   z-index: 999999;
+  transform: translate3d(0, 0, 0);
   will-change: transform;
+  transition: none; /* No movement lag */
 }
 
 .premium-arrow-svg {
   display: block;
-  transition: filter 0.2s ease;
+  transition: filter 0.2s ease; /* Only animate hover glow */
 }
 
-/* =====================================
-   PARTICLE SYSTEM
-   ===================================== */
-
-.cursor-particle {
-  position: fixed;
-  top: 0;
-  left: 0;
-  border-radius: 50%;
-  pointer-events: none !important;
-  z-index: 999998;
-  will-change: transform, opacity;
-  transform: translate(-50%, -50%); /* Base centering, JS scales it from here */
-  /* Colors and shadows are applied dynamically in JS */
-}
-
-/* =====================================
-   HOVER EFFECTS
-   ===================================== */
-
-/* Subtle glow increase ONLY. NO size, scale, or layout changes! */
 .cursor-arrow-wrapper.cursor-hover .premium-arrow-svg {
   filter: brightness(1.2) drop-shadow(0 0 8px rgba(192, 132, 252, 0.6));
 }
 
-/* =====================================
-   SYSTEM CONTROLS
-   ===================================== */
+.cursor-particle {
+  position: fixed;
+  margin-top: -3px;
+  margin-left: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  filter: drop-shadow(0 0 8px currentColor);
+  opacity: 0.9;
+  animation: particleDisappear 0.7s ease-out forwards;
+  will-change: transform, opacity;
+}
 
-/* Replace default cursor visually on desktop */
+@keyframes particleDisappear {
+  0% {
+    opacity: 0.9;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) translateY(-25px);
+  }
+}
+
 @media (min-width: 1024px) {
   body, a, button, input, [role="button"], [class*="card"] {
     cursor: none !important;
   }
 }
 
-/* Disable custom cursor entirely on mobile */
 @media (max-width: 1023px) {
   .cursor-arrow-wrapper, .cursor-particle {
     display: none !important;
   }
+}
+
+/* Hide custom cursor when hovering over iframes (e.g. video player) */
+body:has(iframe:hover) .cursor-arrow-wrapper {
+  display: none !important;
+}
+
+iframe:hover {
+  cursor: pointer;
 }

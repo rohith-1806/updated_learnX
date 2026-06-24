@@ -1,6 +1,8 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
+import { useAuth } from "./context/AuthContext";
+import PageLoader from "./components/common/PageLoader";
 
 // COMMON NEW
 import Navbar from "./components/Navbar";
@@ -43,6 +45,7 @@ function HomePage() {
 
 function App() {
   const location = useLocation();
+  const { loading } = useAuth();
 
   // Hide the global Navbar in LMS player, dashboards, and verify-email screen
   const hideNavbar =
@@ -50,6 +53,10 @@ function App() {
     location.pathname === "/user-dashboard" ||
     location.pathname.includes("verify-email") ||
     location.pathname.startsWith("/player/");
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   return (
     <>

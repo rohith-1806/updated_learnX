@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useParams,useNavigate} from "react-router-dom";
-import Loader from "../../Loader/Loader";
+import SkeletonLoader from "../../common/SkeletonLoader";
 import "./Domains.css";
 
 
@@ -129,7 +129,7 @@ getDomains();
 
 
 
-if(loading)return <Loader text="Loading Domains..." />;
+if(loading)return <SkeletonLoader count={4} type="department" />;
 
 
 

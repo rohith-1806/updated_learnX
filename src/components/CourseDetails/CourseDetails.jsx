@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCourse, getModules, getMyEnrollments } from '../../services/courseContentApi'; 
-import Loader from '../Loader/Loader';
+import PageLoader from '../common/PageLoader';
 import './CourseDetails.css';
 
 const CourseDetails = () => {
@@ -117,7 +117,7 @@ const CourseDetails = () => {
         }
     };
 
-    if (loading) return <Loader text="Optimizing Course Blueprint..." />;
+    if (loading) return <PageLoader text="Loading course details..." />;
     if (!course) return <div className="error-state">Target node reference error.</div>;
 
     return (

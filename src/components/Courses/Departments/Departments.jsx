@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useNavigate} from "react-router-dom";
-import Loader from "../../Loader/Loader";
+import SkeletonLoader from "../../common/SkeletonLoader";
 import "./Departments.css";
 
 
@@ -200,7 +200,7 @@ return "https://images.unsplash.com/photo-1498050108023-c5249f4df085";
 
 
 
-if(loading)return <Loader text="Loading Departments..." />;
+if(loading)return <SkeletonLoader count={2} type="department" />;
 
 
 

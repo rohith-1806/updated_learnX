@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Loader from "../Loader/Loader";
+import SkeletonLoader from "../common/SkeletonLoader";
+import PageLoader from "../common/PageLoader";
 import "./Events.css";
 
 const Events = ({ home }) => {
@@ -155,7 +156,7 @@ const Events = ({ home }) => {
       <h1 className="title section-heading-premium">Upcoming Events</h1>
 
       {loading ? (
-        <Loader text="Loading operational manifests..." />
+        home ? <PageLoader /> : <SkeletonLoader count={6} type="event" />
       ) : (
         <div className="events-grid">
           {displayedEvents.map((event, index) => (

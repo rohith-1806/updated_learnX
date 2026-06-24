@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { sendChatMessage } from "../../services/chatbotApi";
+import { useAuth } from "../../context/AuthContext";
 import "./LearnXHelper.css";
 
 const initialMessage = {
@@ -9,6 +10,8 @@ const initialMessage = {
 };
 
 const LearnXHelper = () => {
+  const { user, token } = useAuth();
+  
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([initialMessage]);
   const [inputValue, setInputValue] = useState("");
@@ -34,6 +37,20 @@ const LearnXHelper = () => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isTyping, isOpen]);
+
+  // Clear state when user logs out
+  useEffect(() => {
+    if (!user || !token) {
+      setIsOpen(false);
+      localStorage.removeItem("learnx_chat_open");
+      setMessages([initialMessage]);
+      setInputValue("");
+    }
+  }, [user, token]);
+
+  if (!user || !token) {
+    return null;
+  }
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
