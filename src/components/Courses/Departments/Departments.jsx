@@ -200,7 +200,7 @@ return "https://images.unsplash.com/photo-1498050108023-c5249f4df085";
 
 
 
-if(loading)return <SkeletonLoader count={2} type="department" />;
+if(loading)return <SkeletonLoader count={8} type="department" />;
 
 
 

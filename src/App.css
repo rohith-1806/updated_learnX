@@ -1,9 +1,9 @@
 /* ================================================
    LIGHT MODE VARIABLES (already working — do not change)
    ================================================ */
-/* Global compact scale: reduces all rem-based sizes by ~6-7% */
+/* Global compact scale: reduces all rem-based sizes by ~15% */
 html {
-  font-size: 93.75%; /* 15px base instead of 16px */
+  font-size: 85%; /* 13.6px base for 15% reduction */
 }
 
 :root,
@@ -45,10 +45,10 @@ html {
   --shadow-sm:        0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Poppins',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,sans-serif}
 body{background-color:var(--bg-secondary);color:var(--text-primary);transition: background-color 0.3s ease, color 0.3s ease;}
 a{text-decoration:none}
-button{cursor:pointer;transition:background-color .3s ease, color .3s ease, border-color .3s ease, box-shadow .3s ease;}
+button{cursor:pointer;transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);border-radius:6px;font-family:'Inter',system-ui,sans-serif}
 
 /* Premium Click Experience */
 button, .btn, .nav-link, .nav-deck-link-item, .navbar-cta-btn-link, .btn-logout, .profile-icon-btn {
@@ -81,10 +81,13 @@ button:active, .btn:active, .nav-link:active, .navbar-cta-btn-link:active, .btn-
 :root:not([data-theme="dark"]) .pathway-item,
 :root:not([data-theme="dark"]) .hierarchy-item-card,
 :root:not([data-theme="dark"]) .my-events-card {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(120, 80, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(120, 80, 255, 0.08);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 24px rgba(120, 80, 255, 0.1);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Card hover glow — light mode */
@@ -251,11 +254,13 @@ html[data-theme="dark"],
 [data-theme="dark"] .my-events-card,
 [data-theme="dark"] .carousel-card-inner,
 [data-theme="dark"] .empty-events-card,
-[data-theme="dark"] .pathway-item {
-  background: var(--dark-card) !important;
-  background-color: var(--dark-card) !important;
+[data-theme="dark"] .pathway-item,
+[data-theme="dark"] .hierarchy-item-card {
+  background: rgba(17, 28, 46, 0.6) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--dark-border) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4) !important;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 

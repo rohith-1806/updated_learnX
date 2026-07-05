@@ -1,36 +1,9 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Printer } from "lucide-react";
 import "./Certificate.css";
 
-const cleanCourseName = (name, description) => {
-  if (description) {
-    const parts = description.split(/\s+content\s+for\s+/i);
-    if (parts.length > 1) {
-      let trackName = parts[1].trim();
-      if (trackName.toLowerCase().includes("communication")) return "Communication";
-      if (trackName.toLowerCase().includes("soft skills")) return "Soft Skills";
-      if (trackName.toLowerCase().includes("data science")) return "Data Science";
-      if (trackName.toLowerCase().includes("aptitude")) return "Aptitude Training";
-      if (trackName.toLowerCase().includes("express")) return "Express.js";
-      if (trackName.toLowerCase().includes("mongodb")) return "MongoDB";
-      if (trackName.toLowerCase().includes("personality")) return "Personality Development";
-      if (trackName.toLowerCase().includes("interview")) return "Interview Preparation";
-      if (trackName.toLowerCase().includes("cyber")) return "Cyber Security";
-      if (trackName.toLowerCase().includes("cloud")) return "Cloud Computing";
-      if (trackName.toLowerCase().includes("ai track")) return "AI Track";
-      return trackName;
-    }
-  }
-  if (name === "Tutorials" || name === "Videos" || name === "Assignments" || name === "Quizzes" || name === "Projects") {
-    if (description && description.includes("HTML")) return "HTML";
-    if (description && description.includes("CSS")) return "CSS";
-    if (description && description.includes("JavaScript")) return "JavaScript";
-    if (description && description.includes("React")) return "React";
-    if (description && description.includes("Node")) return "Node.js";
-  }
-  return name || "";
-};
 
 const Certificate = () => {
   const location = useLocation();
@@ -71,8 +44,8 @@ const Certificate = () => {
         <button className="btn-back-profile" onClick={() => navigate("/profile")}>
           ← Back to Profile
         </button>
-        <button className="btn-print-cert" onClick={printCertificate}>
-          🖨️ Print / Save as PDF
+        <button className="btn-print-cert" onClick={printCertificate} style={{display: "flex", alignItems: "center", gap: 8}}>
+          <Printer size={16} /> Print / Save as PDF
         </button>
       </div>
 
@@ -110,7 +83,7 @@ const Certificate = () => {
             <p className="cert-completion-statement" style={{ marginTop: "1rem" }}>
               for successfully finishing the curriculum and requirements for the learning course
             </p>
-            <h3 className="cert-course-name">{cleanCourseName(course?.name || cert?.courseId?.name, course?.description || cert?.courseId?.description)}</h3>
+            <h3 className="cert-course-name">{course?.title || course?.name || cert?.courseId?.title || cert?.courseId?.name}</h3>
 
             <p className="cert-congrats-text">
               An accomplishment of standard excellence demonstrating comprehensive conceptual understanding and hands-on laboratory application.

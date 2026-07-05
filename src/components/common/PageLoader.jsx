@@ -1,16 +1,10 @@
 import React from "react";
 import "./PageLoader.css";
 
-export default function PageLoader({
-  text = "Loading LernX..."
-}) {
+export default function PageLoader() {
   return (
-    <div className="loader-page">
-      <div className="lx-loader">
-        <div className="loader-circle"></div>
-        <div className="loader-logo">LX</div>
-      </div>
-      <p className="loader-text">{text}</p>
+    <div className="lx-global-loader-wrapper">
+      <div className="lx-loader-ring"></div>
     </div>
   );
 }

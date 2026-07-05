@@ -6,11 +6,14 @@ const ProgressBar = ({ progress = 0 }) => {
   const clampedProgress = Math.min(100, Math.max(0, Number(progress) || 0));
 
   return (
-    <div className="progress-bar-container">
-      <div
-        className="progress-bar-fill"
-        style={{ width: `${clampedProgress}%` }}
-      ></div>
+    <div className="progress-component-wrapper">
+      <div className="progress-bar-container">
+        <div
+          className="progress-bar-fill"
+          style={{ width: `${clampedProgress}%` }}
+        ></div>
+      </div>
+      <span className="progress-percentage-label">{clampedProgress}%</span>
     </div>
   );
 };

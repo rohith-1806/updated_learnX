@@ -1,19 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "./ProgressBar";
+import { useProgress } from "../context/ProgressContext";
 import "./CourseCard.css";
 
 const CourseCard = ({ course, enrollment, onEnroll }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { progressData } = useProgress();
 
-  const isEnrolled = !!enrollment;
-  const progress = enrollment ? enrollment.progress || 0 : 0;
+  // Prefer global context progress if available
+  const courseProgress = progressData[course._id];
+  
+  const isEnrolled = !!courseProgress || !!enrollment;
+  const progress = courseProgress ? courseProgress.percentage : (enrollment ? (enrollment.progressPercentage !== undefined ? enrollment.progressPercentage : enrollment.progress || 0) : 0);
 
   const handleButtonClick = async (e) => {
     e.stopPropagation(); // Avoid navigating to details page
     if (isEnrolled) {
-      navigate(`/player/${course._id}`);
+      // Resume from last position if saved in localStorage
+      const lastLessonId = localStorage.getItem(`last_lesson_${course._id}`);
+      if (lastLessonId) {
+        navigate(`/player/${course._id}?lessonId=${lastLessonId}`);
+      } else {
+        navigate(`/player/${course._id}`);
+      }
     } else {
       setLoading(true);
       try {

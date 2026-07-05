@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCourse, getModules, getMyEnrollments } from '../../services/courseContentApi'; 
 import PageLoader from '../common/PageLoader';
+import { useProgress } from '../../context/ProgressContext';
+import ProgressBar from '../ProgressBar';
 import './CourseDetails.css';
 
 const CourseDetails = () => {
@@ -13,6 +15,8 @@ const CourseDetails = () => {
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [enrollmentId, setEnrollmentId] = useState(null);
     const [progress, setProgress] = useState(0);
+    const { progressData } = useProgress();
+    const currentProgress = progressData[id]?.percentage !== undefined ? progressData[id].percentage : progress;
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -179,13 +183,8 @@ const CourseDetails = () => {
                         <p className="sidebar-sub">Enroll to unlock interactive video modules, structural assignments, and earn your verified certificate.</p>
                         
                         <div className="progress-container-box">
-                            <div className="progress-labels">
-                                <span className="progress-label-text">Progress</span>
-                                <span className="progress-percentage-num">{progress}%</span>
-                            </div>
-                            <div className="progress-track-bar">
-                                <div className="progress-fill-bar" style={{ width: `${progress}%` }}></div>
-                            </div>
+                            <span className="progress-label-text" style={{ alignSelf: 'center', marginBottom: '8px', display: 'block', fontWeight: 'bold' }}>Course Progress</span>
+                            <ProgressBar progress={currentProgress} />
                         </div>
 
                         {/* Interactive dynamic enrollment status check to handle toggles seamlessly */}

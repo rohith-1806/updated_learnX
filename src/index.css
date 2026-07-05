@@ -55,3 +55,6 @@ body.hide-custom-cursor .cursor-particle {
   display: none !important;
   opacity: 0 !important;
 }
+
+@keyframes highlightCert { 0% { box-shadow: 0 0 0 2px #8b5cf6, 0 0 20px rgba(139, 92, 246, 0.4); transform: scale(1.02); } 100% { box-shadow: none; transform: scale(1); } }
+.highlight-animation { animation: highlightCert 3s ease-out; }

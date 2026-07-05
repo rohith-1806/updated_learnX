@@ -45,7 +45,7 @@ function HomePage() {
 
 function App() {
   const location = useLocation();
-  const { loading } = useAuth();
+  const { user, loading } = useAuth();
 
   // Hide the global Navbar in LMS player, dashboards, and verify-email screen
   const hideNavbar =
@@ -61,7 +61,7 @@ function App() {
   return (
     <>
       <CustomCursor />
-      {!hideNavbar && <Navbar />}
+      {!hideNavbar && user && <Navbar />}
       <Routes>
         {/* HOME */}
         <Route path="/" element={<HomePage />} />

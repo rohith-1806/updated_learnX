@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {useNavigate} from "react-router-dom";
+import { useProgress } from "../../context/ProgressContext";
 import "./UserDashboard.css";
 
 
@@ -12,6 +13,7 @@ const UserDashboard=()=>{
 
 
 const navigate=useNavigate();
+const { progressData } = useProgress();
 
 
 const [activeSection,setActiveSection]
@@ -481,6 +483,10 @@ navigate("/user-login");
 const progressValue=(item)=>{
 
 
+const cId = item.courseId?._id || item.courseId;
+if (progressData && progressData[cId] && progressData[cId].percentage !== undefined) {
+  return progressData[cId].percentage;
+}
 return(
 
 item.completionPercentage ||

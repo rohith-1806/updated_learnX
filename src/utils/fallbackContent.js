@@ -683,20 +683,20 @@ export const getFallbackContent = (courseName, courseId) => {
   // Compile modules
   const modules = [
     {
-      _id: `${courseId}-mod-1`,
+      _id: (courseId || "").substring(0,20) + "0001",
       name: "Module 1: Foundations & Core Essentials",
       courseId: courseId,
       quizzes: [
         {
-          _id: `${courseId}-quiz-1`,
-          moduleId: `${courseId}-mod-1`,
+          _id: (courseId || "").substring(0,20) + "0003",
+          moduleId: (courseId || "").substring(0,20) + "0001",
           title: `Quiz: ${selected.videoTitle}`,
           questions: generateQuiz(courseName)
         }
       ]
     },
     {
-      _id: `${courseId}-mod-2`,
+      _id: (courseId || "").substring(0,20) + "0002",
       name: "Module 2: Advanced Implementations & Projects",
       courseId: courseId,
       quizzes: []
@@ -705,8 +705,8 @@ export const getFallbackContent = (courseName, courseId) => {
 
   // Compile submodules
   const subModules = selected.topics.map((t, idx) => ({
-    _id: `${courseId}-sub-${idx + 1}`,
-    moduleId: idx < 2 ? `${courseId}-mod-1` : `${courseId}-mod-2`,
+    _id: (courseId || "").substring(0,20) + "0" + String(idx + 100),
+    moduleId: idx < 2 ? ((courseId || "").substring(0,20) + "0001") : ((courseId || "").substring(0,20) + "0002"),
     name: t.name,
     content: t.content
   }));
@@ -714,8 +714,8 @@ export const getFallbackContent = (courseName, courseId) => {
   // Compile videos
   const videos = [
     {
-      _id: `${courseId}-vid-1`,
-      subModuleId: `${courseId}-sub-2`,
+      _id: (courseId || "").substring(0,20) + "0005",
+      subModuleId: (courseId || "").substring(0,20) + "0101",
       title: `Video Lecture: ${selected.videoTitle}`,
       videoUrl: getCourseVideo(courseName, selected.videoTitle),
       duration: "12:45",
@@ -725,8 +725,8 @@ export const getFallbackContent = (courseName, courseId) => {
 
   // Compile assignments
   const assignments = selected.assignments.map((asm, idx) => ({
-    _id: `${courseId}-asm-${idx + 1}`,
-    moduleId: idx < 2 ? `${courseId}-mod-1` : `${courseId}-mod-2`,
+    _id: (courseId || "").substring(0,20) + "0" + String(idx + 200),
+    moduleId: idx < 2 ? ((courseId || "").substring(0,20) + "0001") : ((courseId || "").substring(0,20) + "0002"),
     title: asm.title,
     description: asm.description,
     maxMarks: 100
@@ -736,7 +736,7 @@ export const getFallbackContent = (courseName, courseId) => {
   const finalAssignmentData = generateFinalAssignment(courseName);
   const finalAssignments = [
     {
-      _id: `${courseId}-final-1`,
+      _id: (courseId || "").substring(0,20) + "0007",
       courseId: courseId,
       title: finalAssignmentData.title,
       description: finalAssignmentData.description,

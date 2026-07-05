@@ -132,7 +132,7 @@ getCategories();
 
 
 
-if(loading)return <SkeletonLoader count={4} type="department" />;
+if(loading)return <SkeletonLoader count={8} type="department" />;
 
 
 

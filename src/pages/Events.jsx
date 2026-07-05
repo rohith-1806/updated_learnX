@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { getUserEvents, registerForEvent, getMyEvents } from "../services/authApi";
 import { useAuth } from "../context/AuthContext";
-import SkeletonLoader from "../components/common/SkeletonLoader";
 import PageLoader from "../components/common/PageLoader";
 import { getSkeletonCount, saveSkeletonCount } from "../utils/skeletonCountCache";
+import { CalendarDays, MapPin, CheckCircle } from "lucide-react";
 import "./Events.css";
 
 const Events = ({ home = false }) => {
@@ -132,29 +132,9 @@ const Events = ({ home = false }) => {
     startAutoSlide();
   };
 
-  // HOME PAGE: ring loader only — zero skeleton cards
-  if (loading && home) {
-    return <PageLoader />;
-  }
-
-  // STANDALONE /events PAGE: skeleton cards while loading
+  // ALL PAGES: ring loader only
   if (loading) {
-    return (
-      <div className="events-workspace">
-        <section className="events-hero-section">
-          <div className="hero-content">
-            <h1>Workshops & Events</h1>
-            <p>Join live, expert-led training sessions to gain competitive industry skills.</p>
-          </div>
-        </section>
-        <div className="events-layout-container">
-          <main className="all-events-section">
-            <h2 className="section-heading-premium">Upcoming Schedules</h2>
-            <SkeletonLoader count={skeletonCount} type="event" />
-          </main>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   // Home Page View: 3D perspective slider carousel
@@ -273,14 +253,14 @@ const Events = ({ home = false }) => {
                       <div className="carousel-card-body">
                         <h3>{evt.name}</h3>
                         <div className="evt-meta-row">
-                          <span>📅 {evt.date ? new Date(evt.date).toLocaleDateString() : "TBA"}</span>
-                          <span>📍 {evt.location || "Online"}</span>
+                          <span style={{display:"flex", alignItems:"center", gap:4}}><CalendarDays size={16}/> {evt.date ? new Date(evt.date).toLocaleDateString() : "TBA"}</span>
+                          <span style={{display:"flex", alignItems:"center", gap:4}}><MapPin size={16}/> {evt.location || "Online"}</span>
                         </div>
                         <p className="evt-desc-excerpt">{evt.description}</p>
                       </div>
                       <div className="carousel-card-footer">
                         {registered ? (
-                          <div className="registered-tick-badge">✓ Spot Reserved</div>
+                          <div className="registered-tick-badge"><CheckCircle size={16} style={{marginRight: 4}}/> Spot Reserved</div>
                         ) : (
                           <button 
                             className="btn-carousel-register"
@@ -317,9 +297,11 @@ const Events = ({ home = false }) => {
       <div className="events-layout-container">
         <main className="all-events-section">
           <h2 className="section-heading-premium">Upcoming Schedules ({events.length})</h2>
-          {events.length === 0 ? (
-            <div className="empty-events-card">
-              <span className="empty-icon">📅</span>
+          {loading ? (
+            <PageLoader />
+          ) : events.length === 0 ? (
+            <div className="empty-events-state">
+              <span className="empty-icon"><CalendarDays size={48} color="#94a3b8" /></span>
               <p>No active schedules found.</p>
             </div>
           ) : (
@@ -342,15 +324,15 @@ const Events = ({ home = false }) => {
                     <div className="event-card-body">
                       <h3>{evt.name}</h3>
                       <div className="evt-details-info">
-                        <span className="evt-meta-item">📅 {evt.date ? new Date(evt.date).toLocaleDateString() : "TBA"}</span>
-                        <span className="evt-meta-item">📍 {evt.location || "Online"}</span>
+                        <span className="evt-meta-item"><CalendarDays size={16} /> {evt.date ? new Date(evt.date).toLocaleDateString() : "TBA"}</span>
+                        <span className="evt-meta-item"><MapPin size={16} /> {evt.location || "Online"}</span>
                       </div>
                       <p className="evt-desc">{evt.description}</p>
                     </div>
 
                     <div className="event-card-footer">
                       {registered ? (
-                        <div className="event-registered-badge">✓ Reserved Spot</div>
+                        <div className="event-registered-badge"><CheckCircle size={16} style={{marginRight: 4}} /> Reserved Spot</div>
                       ) : (
                         <button
                           className="btn-event-register"

@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getCourseDetails, getModules, getSubModules } from "../services/courseApi";
 import { getMyEnrollments, enrollInCourse } from "../services/enrollmentApi";
 import { generateCertificate, getMyCertificates } from "../services/certificateApi";
+import { useProgress } from "../context/ProgressContext";
 import ProgressBar from "../components/ProgressBar";
 import { normalizeArray } from "../utils/normalizeArray";
+import { Clock, User, Zap, Activity, FileText, PlayCircle, Award } from "lucide-react";
 import "./CourseDetails.css";
 
 const cleanCourseName = (name, description) => {
@@ -26,61 +28,48 @@ const cleanCourseName = (name, description) => {
       return trackName;
     }
   }
-  if (name === "Tutorials" || name === "Videos" || name === "Assignments" || name === "Quizzes" || name === "Projects") {
-    if (description && description.includes("HTML")) return "HTML";
-    if (description && description.includes("CSS")) return "CSS";
-    if (description && description.includes("JavaScript")) return "JavaScript";
-    if (description && description.includes("React")) return "React";
-    if (description && description.includes("Node")) return "Node.js";
-  }
   return name || "";
 };
 
 const CourseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { progressData, fetchCourseProgress } = useProgress();
 
   const [course, setCourse] = useState(null);
-  const [syllabus, setSyllabus] = useState([]); // Array of modules with submodules
+  const [syllabus, setSyllabus] = useState([]);
   const [enrollment, setEnrollment] = useState(null);
   const [hasCertificate, setHasCertificate] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const [loadingAction, setLoadingAction] = useState(false);
   const [loadingCertificate, setLoadingCertificate] = useState(false);
   const [error, setError] = useState(null);
 
+  const courseProgress = progressData[id];
+  const progress = courseProgress ? courseProgress.percentage : (enrollment ? (enrollment.progressPercentage !== undefined ? enrollment.progressPercentage : enrollment.progress || 0) : 0);
+
   useEffect(() => {
     fetchCourseDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchCourseDetails = async () => {
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch Course details
       const courseData = await getCourseDetails(id);
-      if (!courseData) {
-        setError("Course not found.");
-        setLoading(false);
-        return;
-      }
+      if (!courseData) { setError("Course not found."); setLoading(false); return; }
       setCourse(courseData);
 
-      // 2. Fetch enrollment status
       const enrolls = await getMyEnrollments();
       const currentEnroll = enrolls.find((e) => e.courseId?._id === id || e.courseId === id);
       setEnrollment(currentEnroll || null);
 
-      // 3. Fetch certificates if complete
-      if (currentEnroll && currentEnroll.progress === 100) {
+      if (currentEnroll && (currentEnroll.progress === 100 || currentEnroll.progressPercentage === 100)) {
         const certs = await getMyCertificates();
         const earned = certs.some((c) => c.courseId?._id === id || c.courseId === id);
         setHasCertificate(earned);
       }
 
-      // 4. Fetch Modules & Submodules for Syllabus Outline
       const modulesData = await getModules(id);
       const syllabusOutline = await Promise.all(
         normalizeArray(modulesData).map(async (mod) => {
@@ -101,16 +90,14 @@ const CourseDetails = () => {
     setLoadingAction(true);
     try {
       await enrollInCourse(id);
-      // Refresh enrollments
       const enrolls = await getMyEnrollments();
       const currentEnroll = enrolls.find((e) => e.courseId?._id === id || e.courseId === id);
       setEnrollment(currentEnroll);
+      await fetchCourseProgress(id);
     } catch (err) {
       alert(err.response?.data?.error || "Please log in to start learning this course.");
       navigate("/user-login");
-    } finally {
-      setLoadingAction(false);
-    }
+    } finally { setLoadingAction(false); }
   };
 
   const handleGenerateCertificate = async () => {
@@ -122,18 +109,11 @@ const CourseDetails = () => {
       navigate("/profile");
     } catch (err) {
       alert(err.response?.data?.error || "Failed to generate certificate.");
-    } finally {
-      setLoadingCertificate(false);
-    }
+    } finally { setLoadingCertificate(false); }
   };
 
-  if (!course) {
-    return (
-      <div className="course-details-loading">
-        <div className="loader"></div>
-        <p>Loading course information...</p>
-      </div>
-    );
+  if (loading) {
+    return <div className="course-details-loading"><div className="loader"></div><p>Loading course information...</p></div>;
   }
 
   if (error || !course) {
@@ -141,24 +121,18 @@ const CourseDetails = () => {
       <div className="course-details-error">
         <h2>Oops! Page Loading Failed</h2>
         <p>{error || "Course information could not be retrieved."}</p>
-        <button onClick={() => navigate("/courses")} className="btn-back">
-          Back to Catalogue
-        </button>
+        <button onClick={() => navigate("/courses")} className="btn-back">Back to Catalogue</button>
       </div>
     );
   }
 
   const isEnrolled = !!enrollment;
-  const progress = enrollment ? enrollment.progress || 0 : 0;
 
   return (
     <div className="course-details-page">
-      {/* Top Section: Purple Gradient Banner */}
       <section className="purple-hero-banner">
         <div className="banner-content-container">
-          <button className="btn-details-back" onClick={() => navigate("/courses")}>
-            ← Back to Courses
-          </button>
+          <button className="btn-details-back" onClick={() => navigate("/courses")}>← Back to Courses</button>
           <span className="banner-badge">{course.difficulty || "Intermediate"}</span>
           <h1 className="banner-title">{cleanCourseName(course.name, course.description)}</h1>
           <div className="banner-meta-row">
@@ -184,54 +158,35 @@ const CourseDetails = () => {
         </div>
       </section>
 
-      {/* Main Body Columns */}
       <section className="details-body-container">
         <div className="details-grid">
-          {/* Left Column: Track Details Card & Syllabus Detail */}
           <div className="details-main-col">
             <div className="desc-card rounded-card shadow-card">
               <h3>Course Description</h3>
-              <p className="description-text">
-                {course.description || "Learn core foundational theories and practical techniques in this comprehensive course stack. Curated by industry practitioners, this pathway offers hands-on coding environments and direct project reviews."}
-              </p>
-              
+              <p className="description-text">{course.description || "Learn core foundational theories and practical techniques in this comprehensive course stack."}</p>
               <div className="desc-specs-grid">
                 <div className="spec-tile">
-                  <span className="spec-icon">⏱️</span>
-                  <div>
-                    <span className="spec-label">Duration</span>
-                    <span className="spec-value">{course.duration || "Self-Paced"}</span>
-                  </div>
+                  <span className="spec-icon"><Clock size={20} /></span>
+                  <div><span className="spec-label">Duration</span><span className="spec-value">{course.duration || "Self-Paced"}</span></div>
                 </div>
                 <div className="spec-tile">
-                  <span className="spec-icon">👨‍🏫</span>
-                  <div>
-                    <span className="spec-label">Instructor</span>
-                    <span className="spec-value">{course.instructor || "LernX Team"}</span>
-                  </div>
+                  <span className="spec-icon"><User size={20} /></span>
+                  <div><span className="spec-label">Instructor</span><span className="spec-value">{course.instructor || "LernX Team"}</span></div>
                 </div>
                 <div className="spec-tile">
-                  <span className="spec-icon">⚡</span>
-                  <div>
-                    <span className="spec-label">Difficulty</span>
-                    <span className="spec-value">{course.difficulty || "All Levels"}</span>
-                  </div>
+                  <span className="spec-icon"><Zap size={20} /></span>
+                  <div><span className="spec-label">Difficulty</span><span className="spec-value">{course.difficulty || "All Levels"}</span></div>
                 </div>
                 <div className="spec-tile">
-                  <span className="spec-icon">🚀</span>
-                  <div>
-                    <span className="spec-label">Skill Status</span>
-                    <span className="spec-value">{course.status || "Active"}</span>
-                  </div>
+                  <span className="spec-icon"><Activity size={20} /></span>
+                  <div><span className="spec-label">Status</span><span className="spec-value">{course.status || "Active"}</span></div>
                 </div>
               </div>
             </div>
 
-            {/* Detailed Syllabus Preview */}
             <div className="syllabus-preview-card rounded-card shadow-card">
               <h3>Course Outline</h3>
               <p className="section-intro">Explore what you will learn in this curriculum pathway.</p>
-              
               <div className="syllabus-list-outline">
                 {syllabus.length === 0 ? (
                   <p className="no-syllabus">No syllabus curriculum published yet.</p>
@@ -242,15 +197,11 @@ const CourseDetails = () => {
                         <span className="mod-idx-badge">Module {index + 1}</span>
                         <span className="mod-idx-name">{mod.name}</span>
                       </div>
-                      {mod.notes && (
-                        <p className="module-notes-text" style={{ fontSize: "0.85rem", color: "#64748b", margin: "0.5rem 0 0.75rem 2.5rem", fontStyle: "italic" }}>
-                          📝 {mod.notes}
-                        </p>
-                      )}
+                      {mod.notes && <p className="module-notes-text"><FileText size={16} /> {mod.notes}</p>}
                       <ul className="submodule-preview-list">
                         {normalizeArray(mod.subModules).map((sub) => (
                           <li key={sub._id} className="submodule-preview-item">
-                            <span className="play-circle-icon">▶</span>
+                            <span className="play-circle-icon"><PlayCircle size={16} /></span>
                             <span>{sub.name}</span>
                           </li>
                         ))}
@@ -262,11 +213,9 @@ const CourseDetails = () => {
             </div>
           </div>
 
-          {/* Right Column: Explore Syllabus & Enrollment Progress */}
           <div className="details-sidebar-col">
             <div className="explore-syllabus-card rounded-card shadow-card">
               <h3>Explore Syllabus</h3>
-              
               {isEnrolled ? (
                 <div className="progress-section">
                   <div className="progress-labels">
@@ -274,56 +223,34 @@ const CourseDetails = () => {
                     <span className="prog-percent">{progress}%</span>
                   </div>
                   <ProgressBar progress={progress} />
-                  
                   {progress === 100 ? (
                     <div className="completion-block">
-                      <span className="badge-complete">🎓 Finished</span>
+                      <span className="badge-complete"><Award size={16} style={{marginRight: 4}} /> Finished</span>
                       {hasCertificate ? (
-                        <button
-                          className="btn-download-cert"
-                          onClick={() => navigate("/profile")}
-                        >
-                          View Certificate
-                        </button>
+                        <button className="btn-download-cert" onClick={() => navigate("/profile")}>View Certificate</button>
                       ) : (
-                        <button
-                          className="btn-generate-cert"
-                          onClick={handleGenerateCertificate}
-                          disabled={loadingCertificate}
-                        >
+                        <button className="btn-generate-cert" onClick={handleGenerateCertificate} disabled={loadingCertificate}>
                           {loadingCertificate ? "Validating..." : "Generate Certificate"}
                         </button>
                       )}
                     </div>
                   ) : (
-                    <p className="syllabus-info-note">
-                      Complete all submodules in the roadmap workspace to unlock your certificate.
-                    </p>
+                    <p className="syllabus-info-note">Complete all submodules to unlock your certificate.</p>
                   )}
                 </div>
               ) : (
                 <div className="pre-enroll-section">
-                  <p className="pre-enroll-note">
-                    Unlock all syllabus tutorials, videos, and project files by joining this course.
-                  </p>
+                  <p className="pre-enroll-note">Unlock all syllabus tutorials, videos, and project files by joining this course.</p>
                 </div>
               )}
-
               <div className="action-buttons-wrapper">
                 {isEnrolled ? (
-                  <button
-                    className="btn-primary-action btn-continue"
-                    onClick={() => navigate(`/player/${course._id}`)}
-                  >
-                    Continue Learning →
+                  <button className="btn-primary-action btn-continue" onClick={() => navigate(`/player/${course._id}`)}>
+                    {progress === 100 ? "Course Completed" : "Continue Learning →"}
                   </button>
                 ) : (
-                  <button
-                    className="btn-primary-action btn-enroll"
-                    onClick={handleEnroll}
-                    disabled={loadingAction}
-                  >
-                    {loadingAction ? "Registering Session..." : "Start Learning"}
+                  <button className="btn-primary-action btn-enroll" onClick={handleEnroll} disabled={loadingAction}>
+                    {loadingAction ? "Registering..." : "Start Learning"}
                   </button>
                 )}
               </div>

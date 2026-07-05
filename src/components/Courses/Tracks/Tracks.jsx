@@ -135,7 +135,7 @@ getTracks();
 
 
 
-if(loading)return <SkeletonLoader count={4} type="course" />;
+if(loading)return <SkeletonLoader count={8} type="course" />;
 
 
 
