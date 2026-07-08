@@ -68,6 +68,38 @@ button:active, .btn:active, .nav-link:active, .navbar-cta-btn-link:active, .btn-
    Premium purple-tinted glow on hover
    ================================================ */
 
+/* Theme-agnostic shared card layouts */
+.course-card,
+.event-card,
+.event-workspace-card,
+.profile-section-card,
+.certificate-badge-card,
+.workshop-card,
+.dashboard-card,
+.department-card,
+.quiz-card,
+.pathway-item,
+.hierarchy-item-card,
+.my-events-card {
+  border-radius: 16px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease, color 0.15s ease;
+}
+
+.course-card:hover,
+.event-card:hover,
+.event-workspace-card:hover,
+.profile-section-card:hover,
+.certificate-badge-card:hover,
+.workshop-card:hover,
+.dashboard-card:hover,
+.department-card:hover,
+.quiz-card:hover,
+.pathway-item:hover,
+.hierarchy-item-card:hover,
+.my-events-card:hover {
+  transform: translateY(-3px);
+}
+
 /* Base card glow — light mode */
 :root:not([data-theme="dark"]) .course-card,
 :root:not([data-theme="dark"]) .event-card,
@@ -86,8 +118,6 @@ button:active, .btn:active, .nav-link:active, .navbar-cta-btn-link:active, .btn-
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 4px 24px rgba(120, 80, 255, 0.1);
-  border-radius: 16px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Card hover glow — light mode */
@@ -261,7 +291,6 @@ html[data-theme="dark"],
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--dark-border) !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4) !important;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 /* Hover — subtle lift, no neon glow */
@@ -276,7 +305,6 @@ html[data-theme="dark"],
 [data-theme="dark"] .quiz-card:hover,
 [data-theme="dark"] .pathway-item:hover,
 [data-theme="dark"] .carousel-card-inner:hover {
-  transform: translateY(-3px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45) !important;
   border-color: rgba(148, 163, 184, 0.2) !important;
 }
@@ -351,16 +379,7 @@ html[data-theme="dark"],
   height: 100% !important;
 }
 
-[data-theme="dark"] .navbar-avatar-trigger-link,
-[data-theme="dark"] .profile-icon-btn,
-[data-theme="dark"] .profile-icon {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  height: 36px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
+
 
 [data-theme="dark"] .avatar-vector-icon,
 [data-theme="dark"] .avatar-svg {
@@ -377,24 +396,12 @@ html[data-theme="dark"],
   line-height: 1 !important;
 }
 
-/* Logout button style to match premium dark UI */
 [data-theme="dark"] .btn-logout,
 [data-theme="dark"] .navbar-action-cta-logout-btn {
   background: transparent !important;
   background-color: transparent !important;
   border: 1px solid var(--dark-border) !important;
   color: var(--text-muted) !important;
-  border-radius: 6px !important;
-  padding: 0 16px !important;
-  height: 36px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-weight: 600 !important;
-  font-size: 13.5px !important;
-  transition: all 0.15s ease !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
 }
 
 [data-theme="dark"] .btn-logout:hover,
@@ -526,7 +533,6 @@ html[data-theme="dark"],
   background: linear-gradient(145deg, #111827, #172033) !important;
   border: 1px solid var(--dark-border) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
-  border-radius: 14px !important;
 }
 
 [data-theme="dark"] .course-card:hover,
@@ -582,7 +588,6 @@ html[data-theme="dark"],
   background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
   color: #ffffff !important;
   border: none !important;
-  border-radius: 10px !important;
 }
 
 [data-theme="dark"] .course-card button:hover,
@@ -840,7 +845,6 @@ html[data-theme="dark"],
 [data-theme="dark"] .certificate-badge-card {
   background: var(--dark-card) !important;
   border: 1px solid var(--dark-border) !important;
-  border-radius: 14px !important;
   box-shadow: none !important;
   color: var(--text-main) !important;
 }
@@ -849,7 +853,6 @@ html[data-theme="dark"],
 [data-theme="dark"] .profile-event-row {
   background: rgba(255, 255, 255, 0.03) !important;
   border: 1px solid var(--dark-border) !important;
-  border-radius: 10px !important;
   box-shadow: none !important;
   color: var(--text-main) !important;
 }
@@ -886,8 +889,6 @@ html[data-theme="dark"],
   background: var(--bg-section) !important;
   color: #ffffff !important;
   border: 1px solid var(--border-color) !important;
-  border-radius: 8px !important;
-  padding: 10px 14px !important;
 }
 
 [data-theme="dark"] .profile-page input:focus,
@@ -928,7 +929,6 @@ html[data-theme="dark"],
   background-color: var(--bg-section) !important;
   border: 1px solid var(--border-color) !important;
   color: var(--text-main) !important;
-  border-radius: 8px !important;
 }
 
 [data-theme="dark"] .progress-value-label {

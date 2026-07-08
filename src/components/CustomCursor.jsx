@@ -7,13 +7,16 @@ const CustomCursor = () => {
   useEffect(() => {
     let lastParticle = 0;
 
+    let mouseX = 0;
+    let mouseY = 0;
+    let prevX = 0;
+    let prevY = 0;
+    let frameId = null;
+
     const createParticle = (x, y) => {
       // Create DOM element for particle
       const particle = document.createElement("span");
       particle.className = "cursor-particle";
-      // Offset so the particle comes out from the tip/tail
-      particle.style.left = (x + 8) + "px";
-      particle.style.top = (y + 12) + "px";
       
       const particleColors = [
         "#a855f7",
@@ -24,8 +27,11 @@ const CustomCursor = () => {
       ];
       const color = particleColors[Math.floor(Math.random() * particleColors.length)];
       particle.style.background = color;
-      particle.style.boxShadow = `0 0 8px ${color}, 0 0 18px ${color}`;
+      particle.style.boxShadow = `0 0 4px ${color}, 0 0 8px ${color}`;
       particle.style.color = color; // For currentColor drop-shadow
+
+      particle.style.setProperty('--x', (x + 6) + "px");
+      particle.style.setProperty('--y', (y + 9) + "px");
 
       document.body.appendChild(particle);
 
@@ -36,34 +42,55 @@ const CustomCursor = () => {
     };
 
     const move = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
       // 1. Hide custom cursor if hovering over input, textarea, or contenteditable
       const target = e.target;
       const isInput = 
+        target && (
         target.tagName === 'INPUT' || 
         target.tagName === 'TEXTAREA' || 
-        target.isContentEditable;
+        target.isContentEditable);
         
-      if (isInput) {
-        if (cursorRef.current) cursorRef.current.style.opacity = '0';
-        return; // Don't spawn particles or track position
-      } else {
-        if (cursorRef.current) cursorRef.current.style.opacity = '1';
+      if (cursorRef.current) {
+        cursorRef.current.style.opacity = isInput ? '0' : '1';
       }
 
-      // 2. Arrow instantly tracks exact coordinate
-      requestAnimationFrame(() => {
-        if (cursorRef.current) {
-          cursorRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-        }
-      });
+      if (!frameId) {
+        frameId = requestAnimationFrame(updateCursor);
+      }
+    };
 
-      // 3. Spawn particles
-      if (Date.now() - lastParticle > 35) {
-        // limit particles
-        if (document.querySelectorAll('.cursor-particle').length < 20) {
-          createParticle(e.clientX, e.clientY);
+    const updateCursor = () => {
+      frameId = null;
+
+      // 2. Arrow instantly tracks exact coordinate
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      }
+
+      // 3. Spawn particles only when moving
+      const hasMoved = mouseX !== prevX || mouseY !== prevY;
+      if (hasMoved) {
+        prevX = mouseX;
+        prevY = mouseY;
+
+        if (Date.now() - lastParticle > 60) {
+          // limit particles
+          if (document.querySelectorAll('.cursor-particle').length < 12) {
+            const target = document.elementFromPoint(mouseX, mouseY);
+            const isInput = target && (
+              target.tagName === 'INPUT' || 
+              target.tagName === 'TEXTAREA' || 
+              target.isContentEditable
+            );
+            if (!isInput) {
+              createParticle(mouseX, mouseY);
+              lastParticle = Date.now();
+            }
+          }
         }
-        lastParticle = Date.now();
       }
     };
 
@@ -95,6 +122,9 @@ const CustomCursor = () => {
 
     return () => {
       window.removeEventListener("mousemove", move);
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
       observer.disconnect();
       // Remove event listeners
       const targets = document.querySelectorAll('a, button, [role="button"], input, [class*="card"]');
@@ -107,14 +137,14 @@ const CustomCursor = () => {
 
   return (
     <div ref={cursorRef} className="cursor-arrow-wrapper">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="premium-arrow-svg">
+      <svg width="22" height="22" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="premium-arrow-svg">
         <defs>
           <linearGradient id="magic-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#c084fc" />
             <stop offset="100%" stopColor="#7c3aed" />
           </linearGradient>
           <filter id="glass-shadow">
-            <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#7c3aed" floodOpacity="0.4" />
+            <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#7c3aed" floodOpacity="0.3" />
           </filter>
         </defs>
         <path 

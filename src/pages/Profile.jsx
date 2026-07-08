@@ -10,6 +10,46 @@ import { CourseCardSkeleton, CertificateCardSkeleton, EventCardSkeleton, Setting
 import { User, BookOpen, Award, CalendarDays, Settings, LogOut, CheckCircle, ChevronRight, Sun, Moon, MapPin } from "lucide-react";
 import "./Profile.css";
 
+// --------------------------------------------------------------------------
+// ANIMATED COUNTER COMPONENT
+// --------------------------------------------------------------------------
+const AnimatedCounter = ({ value, duration = 800 }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp = null;
+    const end = parseInt(value, 10);
+    if (isNaN(end) || end <= 0) {
+      setCount(0);
+      return;
+    }
+
+    let animationFrameId;
+
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) {
+        animationFrameId = window.requestAnimationFrame(step);
+      } else {
+        setCount(end);
+      }
+    };
+
+    animationFrameId = window.requestAnimationFrame(step);
+
+    return () => {
+      if (animationFrameId) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [value, duration]);
+
+  return <span>{count}</span>;
+};
+
+// Helper function to screen out tutorial files/sandbox exercises
 const isActualCourse = (name) => {
   if (!name) return false;
   const lower = name.toLowerCase();
@@ -33,13 +73,14 @@ const Profile = () => {
   const { progressData, fetchAllUserProgress } = useProgress();
   const [profileLoading, setProfileLoading] = useState(true);
 
-  // Tab State
+  // Tab State - default to "courses" as in original
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem("profileActiveTab") || "courses");
 
   useEffect(() => {
     localStorage.setItem("profileActiveTab", activeTab);
   }, [activeTab]);
 
+  // Processes unique enrollments from user course progress data
   const processedEnrollments = useMemo(() => {
     if (!progressData) return [];
     const uniqueMap = new Map();
@@ -65,6 +106,29 @@ const Profile = () => {
     });
     return Array.from(uniqueMap.values());
   }, [progressData]);
+
+  // Computes completed courses dynamically (progress percentage == 100%)
+  const completedEnrollments = useMemo(() => {
+    return processedEnrollments.filter(enroll => {
+      const progressVal = enroll.progress !== undefined ? enroll.progress : (enroll.progressPercentage || 0);
+      return progressVal === 100;
+    });
+  }, [processedEnrollments]);
+
+  const completedCoursesCount = completedEnrollments.length;
+
+  const joinedDateStr = useMemo(() => {
+    if (!user?.createdAt) return null;
+    try {
+      return new Date(user.createdAt).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (e) {
+      return null;
+    }
+  }, [user?.createdAt]);
 
   const fetchProfileData = useCallback(async () => {
     setProfileLoading(true);
@@ -123,6 +187,7 @@ const Profile = () => {
   const renderContent = () => {
     if (profileLoading) {
       if (activeTab === "courses") return <div className="tab-grid"><CourseCardSkeleton /><CourseCardSkeleton /></div>;
+      if (activeTab === "completed") return <div className="tab-grid"><CourseCardSkeleton /><CourseCardSkeleton /></div>;
       if (activeTab === "certificates") return <div className="tab-grid"><CertificateCardSkeleton /><CertificateCardSkeleton /></div>;
       if (activeTab === "events") return <div className="tab-grid"><EventCardSkeleton /><EventCardSkeleton /></div>;
       if (activeTab === "settings") return <SettingsSkeleton />;
@@ -134,14 +199,25 @@ const Profile = () => {
         return (
           <div className="tab-content glass-card">
             <h2>User Profile</h2>
-            <div className="profile-detail-row">
-              <strong>Name:</strong> <span>{user?.name || "Student"}</span>
-            </div>
-            <div className="profile-detail-row">
-              <strong>Email:</strong> <span>{user?.email}</span>
-            </div>
-            <div className="profile-detail-row">
-              <strong>Role:</strong> <span className="role-badge">{user?.role || "Student"}</span>
+            <div className="profile-details-grid">
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Name</span>
+                <span className="profile-detail-value">{user?.name || "Student"}</span>
+              </div>
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Email Address</span>
+                <span className="profile-detail-value">{user?.email}</span>
+              </div>
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Current Role</span>
+                <span className="profile-detail-value">
+                  <span className="role-badge">{user?.role || "Student"}</span>
+                </span>
+              </div>
+              <div className="profile-detail-card">
+                <span className="profile-detail-label">Joined Date</span>
+                <span className="profile-detail-value">{joinedDateStr || "Recently"}</span>
+              </div>
             </div>
           </div>
         );
@@ -152,7 +228,7 @@ const Profile = () => {
             {processedEnrollments.length === 0 ? (
               <div className="empty-profile-section glass-card">
                 <p>You haven't enrolled in any courses yet.</p>
-                <button className="btn-primary" onClick={() => navigate("/courses")}>Browse Catalogue</button>
+                <button className="btn-primary" onClick={() => navigate("/courses")} style={{maxWidth: 240}}>Browse Catalogue</button>
               </div>
             ) : (
               <div className="tab-grid">
@@ -164,8 +240,10 @@ const Profile = () => {
                   const courseName = enroll.course?.title || enroll.course?.name || courseDetail.name || courseDetail.title || "";
                   return (
                     <div className="course-card glass-card" key={enroll._id}>
-                      <h4>{courseName}</h4>
-                      <p className="instructor-meta">{courseDetail.instructor || "LernX Team"}</p>
+                      <div>
+                        <h4>{courseName}</h4>
+                        <p className="instructor-meta">{courseDetail.instructor || "LernX Team"}</p>
+                      </div>
                       <div className="progress-wrapper">
                         <div className="progress-label">
                           {progressVal === 100 ? <><CheckCircle size={14} style={{marginRight: 4}} /> Completed</> : `${progressVal}%`}
@@ -174,6 +252,45 @@ const Profile = () => {
                       </div>
                       <button className="btn-primary" onClick={() => navigate(progressVal > 0 ? `/player/${courseId}` : `/course/${courseId}`)}>
                         {progressVal === 100 ? "Course Completed " : "Continue "} <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      case "completed":
+        return (
+          <div className="tab-content">
+            <h2>Completed Courses ({completedCoursesCount})</h2>
+            {completedEnrollments.length === 0 ? (
+              <div className="empty-profile-section glass-card">
+                <p>You haven't completed any courses yet.</p>
+                <button className="btn-primary" onClick={() => navigate("/courses")} style={{maxWidth: 240}}>Start Learning</button>
+              </div>
+            ) : (
+              <div className="tab-grid">
+                {completedEnrollments.map((enroll) => {
+                  const courseDetail = enroll.courseId;
+                  if (!courseDetail) return null;
+                  const courseId = courseDetail._id || courseDetail;
+                  const progressVal = 100;
+                  const courseName = enroll.course?.title || enroll.course?.name || courseDetail.name || courseDetail.title || "";
+                  return (
+                    <div className="course-card glass-card" key={enroll._id}>
+                      <div>
+                        <h4>{courseName}</h4>
+                        <p className="instructor-meta">{courseDetail.instructor || "LernX Team"}</p>
+                      </div>
+                      <div className="progress-wrapper">
+                        <div className="progress-label">
+                          <CheckCircle size={14} style={{marginRight: 4}} /> Completed
+                        </div>
+                        <ProgressBar progress={progressVal} />
+                      </div>
+                      <button className="btn-primary" onClick={() => navigate(`/player/${courseId}`)}>
+                        Review Course <ChevronRight size={16} />
                       </button>
                     </div>
                   );
@@ -217,7 +334,7 @@ const Profile = () => {
             {events.length === 0 ? (
               <div className="empty-profile-section glass-card">
                 <p>You haven't registered for any events yet.</p>
-                <button className="btn-primary" onClick={() => navigate("/events")}>Browse Events</button>
+                <button className="btn-primary" onClick={() => navigate("/events")} style={{maxWidth: 240}}>Browse Events</button>
               </div>
             ) : (
               <div className="tab-grid">
@@ -226,10 +343,12 @@ const Profile = () => {
                   if (!evtDetail || (!evtDetail.name && !evtDetail.title)) return null;
                   return (
                     <div className="event-card glass-card" key={regEvt._id}>
-                      <h4>{evtDetail.title || evtDetail.name}</h4>
-                      <div className="event-meta">
-                        <span style={{display:"flex", alignItems:"center", gap:4}}><CalendarDays size={14} /> {evtDetail.date ? new Date(evtDetail.date).toLocaleDateString() : "TBA"}</span>
-                        <span style={{display:"flex", alignItems:"center", gap:4}}><MapPin size={14} /> {evtDetail.location || "Online"}</span>
+                      <div>
+                        <h4>{evtDetail.title || evtDetail.name}</h4>
+                        <div className="event-meta">
+                          <span style={{display:"flex", alignItems:"center", gap:6}}><CalendarDays size={14} /> {evtDetail.date ? new Date(evtDetail.date).toLocaleDateString() : "TBA"}</span>
+                          <span style={{display:"flex", alignItems:"center", gap:6}}><MapPin size={14} /> {evtDetail.location || "Online"}</span>
+                        </div>
                       </div>
                       <span className={`category-pill ${evtDetail.category?.toLowerCase() === "it" ? "it" : "non-it"}`}>
                         {evtDetail.category || "General"}
@@ -262,7 +381,7 @@ const Profile = () => {
                   <label>Confirm Password</label>
                   <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                 </div>
-                <button type="submit" className="btn-primary" disabled={submittingPassword}>
+                <button type="submit" className="btn-primary" disabled={submittingPassword} style={{maxWidth: 200}}>
                   {submittingPassword ? "Saving..." : "Change Password"}
                 </button>
               </form>
@@ -276,24 +395,193 @@ const Profile = () => {
 
   return (
     <div className="profile-dashboard-layout">
-      <aside className="profile-sidebar glass-panel">
-        <div className="sidebar-user-info">
-          <div className="avatar">
-            {user?.name ? user.name[0].toUpperCase() : user?.email ? user.email[0].toUpperCase() : "U"}
+      {/* PROFILE SIDEBAR */}
+      <aside className="profile-sidebar">
+        <div className="sidebar-user-card">
+          <div className="avatar-wrapper">
+            <div className="avatar-glow"></div>
+            <div className="premium-avatar">
+              {user?.name ? user.name[0].toUpperCase() : user?.email ? user.email[0].toUpperCase() : "U"}
+            </div>
           </div>
-          <h3>{user?.name || "Student"}</h3>
-          <p>{user?.email}</p>
+          <div className="user-info-details">
+            <h3 className="user-name">{user?.name || "Student"}</h3>
+            <p className="user-email">{user?.email}</p>
+            <span className="user-meta-badge">{user?.role || "Student"}</span>
+            {joinedDateStr && <span className="user-join-date">Joined {joinedDateStr}</span>}
+          </div>
         </div>
-        <nav className="sidebar-nav">
-          <button className={`nav-item ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}><User size={18} /> Profile</button>
-          <button className={`nav-item ${activeTab === "courses" ? "active" : ""}`} onClick={() => setActiveTab("courses")}><BookOpen size={18} /> Enrolled Courses</button>
-          <button className={`nav-item ${activeTab === "certificates" ? "active" : ""}`} onClick={() => setActiveTab("certificates")}><Award size={18} /> Certificates</button>
-          <button className={`nav-item ${activeTab === "events" ? "active" : ""}`} onClick={() => setActiveTab("events")}><CalendarDays size={18} /> Registered Events</button>
-          <button className={`nav-item ${activeTab === "settings" ? "active" : ""}`} onClick={() => setActiveTab("settings")}><Settings size={18} /> Settings</button>
+
+        <nav className="sidebar-nav-list">
+          <button 
+            className={`nav-item-btn ${activeTab === "profile" ? "active" : ""}`} 
+            onClick={() => setActiveTab("profile")}
+          >
+            <span className="nav-item-content">
+              <User size={18} />
+              Profile
+            </span>
+          </button>
+          
+          <button 
+            className={`nav-item-btn ${activeTab === "courses" ? "active" : ""}`} 
+            onClick={() => setActiveTab("courses")}
+          >
+            <span className="nav-item-content">
+              <BookOpen size={18} />
+              Enrolled Courses
+            </span>
+            <span className="nav-count-badge">
+              {profileLoading ? "..." : processedEnrollments.length}
+            </span>
+          </button>
+
+          <button 
+            className={`nav-item-btn ${activeTab === "completed" ? "active" : ""}`} 
+            onClick={() => setActiveTab("completed")}
+          >
+            <span className="nav-item-content">
+              <CheckCircle size={18} />
+              Completed Courses
+            </span>
+            <span className="nav-count-badge">
+              {profileLoading ? "..." : completedCoursesCount}
+            </span>
+          </button>
+
+          <button 
+            className={`nav-item-btn ${activeTab === "certificates" ? "active" : ""}`} 
+            onClick={() => setActiveTab("certificates")}
+          >
+            <span className="nav-item-content">
+              <Award size={18} />
+              Certificates
+            </span>
+            <span className="nav-count-badge">
+              {profileLoading ? "..." : certificates.length}
+            </span>
+          </button>
+
+          <button 
+            className={`nav-item-btn ${activeTab === "events" ? "active" : ""}`} 
+            onClick={() => setActiveTab("events")}
+          >
+            <span className="nav-item-content">
+              <CalendarDays size={18} />
+              Registered Events
+            </span>
+            <span className="nav-count-badge">
+              {profileLoading ? "..." : events.length}
+            </span>
+          </button>
+
+          <button 
+            className={`nav-item-btn ${activeTab === "settings" ? "active" : ""}`} 
+            onClick={() => setActiveTab("settings")}
+          >
+            <span className="nav-item-content">
+              <Settings size={18} />
+              Settings
+            </span>
+          </button>
         </nav>
       </aside>
+
+      {/* MAIN CONTENT AREA */}
       <main className="profile-content-area">
-        {renderContent()}
+        {/* PREMIUM HERO HEADER */}
+        {activeTab === "profile" && (
+          profileLoading ? (
+            <section className="premium-hero-header skeleton">
+              <div className="skeleton-hero-line welcome"></div>
+              <div className="skeleton-hero-line name"></div>
+              <div className="skeleton-hero-line title"></div>
+              <div className="skeleton-hero-line desc"></div>
+            </section>
+          ) : (
+            <section className="premium-hero-header">
+              <div className="hero-glow-effect"></div>
+              <p className="hero-welcome-lbl">Welcome back,</p>
+              <h1 className="hero-user-name">{user?.name || "Student"}</h1>
+              <h2 className="hero-dashboard-title">Learning Dashboard</h2>
+              <p className="hero-subdescription">
+                Track your enrolled courses, learning progress, certificates and registered events.
+              </p>
+            </section>
+          )
+        )}
+
+        {/* STATISTICS CARDS GRID */}
+        {activeTab === "profile" && (
+          <section className="stats-cards-grid">
+            {/* Card 1: Enrolled */}
+            <div className="stat-glass-card" onClick={() => setActiveTab("courses")}>
+              <div className="stat-card-gradient-glow"></div>
+              <div className="stat-card-header">
+                <span className="stat-card-title">Enrolled Courses</span>
+                <div className="stat-card-icon-container">
+                  <BookOpen size={20} />
+                </div>
+              </div>
+              <div className="stat-card-value">
+                {profileLoading ? "..." : <AnimatedCounter value={processedEnrollments.length} />}
+              </div>
+              <p className="stat-card-desc">Active learning pathways</p>
+            </div>
+
+            {/* Card 2: Completed */}
+            <div className="stat-glass-card" onClick={() => setActiveTab("completed")}>
+              <div className="stat-card-gradient-glow"></div>
+              <div className="stat-card-header">
+                <span className="stat-card-title">Completed Courses</span>
+                <div className="stat-card-icon-container">
+                  <CheckCircle size={20} />
+                </div>
+              </div>
+              <div className="stat-card-value">
+                {profileLoading ? "..." : <AnimatedCounter value={completedCoursesCount} />}
+              </div>
+              <p className="stat-card-desc">Completed curriculum tracks</p>
+            </div>
+
+            {/* Card 3: Certificates */}
+            <div className="stat-glass-card" onClick={() => setActiveTab("certificates")}>
+              <div className="stat-card-gradient-glow"></div>
+              <div className="stat-card-header">
+                <span className="stat-card-title">Certificates</span>
+                <div className="stat-card-icon-container">
+                  <Award size={20} />
+                </div>
+              </div>
+              <div className="stat-card-value">
+                {profileLoading ? "..." : <AnimatedCounter value={certificates.length} />}
+              </div>
+              <p className="stat-card-desc">Earned course credentials</p>
+            </div>
+
+            {/* Card 4: Events */}
+            <div className="stat-glass-card" onClick={() => setActiveTab("events")}>
+              <div className="stat-card-gradient-glow"></div>
+              <div className="stat-card-header">
+                <span className="stat-card-title">Registered Events</span>
+                <div className="stat-card-icon-container">
+                  <CalendarDays size={20} />
+                </div>
+              </div>
+              <div className="stat-card-value">
+                {profileLoading ? "..." : <AnimatedCounter value={events.length} />}
+              </div>
+              <p className="stat-card-desc">Upcoming webinars & bootcamps</p>
+            </div>
+          </section>
+        )}
+
+        {/* TAB VIEWPORT */}
+        <div className="profile-tab-viewport">
+          <div className="tab-fade-container" key={activeTab}>
+            {renderContent()}
+          </div>
+        </div>
       </main>
     </div>
   );

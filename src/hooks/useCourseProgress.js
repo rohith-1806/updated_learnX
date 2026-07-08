@@ -3,66 +3,122 @@ import { useProgress } from "../context/ProgressContext";
 import { markLessonComplete } from "../services/progressService";
 
 /**
- * Custom hook for course-specific progress operations.
- * Reads from ProgressContext via ref to avoid stale closures.
- * Exposes a clean API for CoursePlayer.
+ * Custom Hook
+ * Handles course progress, completed lessons and mark complete action.
  */
-const useCourseProgress = (courseId) => {
-  const { progressData, fetchCourseProgress, fetchAllUserProgress } = useProgress();
 
-  // Always keep a ref to the latest progressData so callbacks never go stale
+const useCourseProgress = (courseId) => {
+  const {
+    progressData,
+    fetchCourseProgress,
+  } = useProgress();
+
+  // Always keep latest progress data
   const progressDataRef = useRef(progressData);
+
   useEffect(() => {
     progressDataRef.current = progressData;
   }, [progressData]);
 
-  // Derived state from context for this specific course
-  const courseData = progressData[courseId] || { percentage: 0, completedLessons: [] };
-  const progress = courseData.percentage || 0;
-  const completedLessons = courseData.completedLessons || [];
+  // Current course progress
+  const courseData = progressData[courseId] || {
+    percentage: 0,
+    completedLessons: [],
+    enrollmentId: null,
+    status: "active",
+    originalEnrollment: null,
+  };
+
+  const progress = Number(courseData.percentage || 0);
+
+  const completedLessons = Array.isArray(courseData.completedLessons)
+    ? courseData.completedLessons
+    : [];
+
   const enrollmentId = courseData.enrollmentId || null;
+
   const status = courseData.status || "active";
+
   const originalEnrollment = courseData.originalEnrollment || null;
 
+  /**
+   * Check lesson completed
+   */
   const isLessonCompleted = useCallback(
     (lessonId) => {
       if (!lessonId) return false;
-      return completedLessons.includes(lessonId);
+
+      return completedLessons.includes(String(lessonId));
     },
     [completedLessons]
   );
 
+  /**
+   * Mark lesson complete
+   */
   const markComplete = useCallback(
     async (lessonId) => {
-      // Read latest from ref, not closure
-      const latest = progressDataRef.current[courseId];
-      const eid = latest?.enrollmentId;
-
-      console.log("STEP 2: useCourseProgress.markComplete", { courseId, lessonId, enrollmentId: eid });
-
-      if (!eid) {
-        console.error("STEP 2 FAILED: No enrollmentId for course", courseId);
-        throw new Error("No enrollment found. Please enroll first.");
+      if (!lessonId) {
+        throw new Error("Lesson ID is missing.");
       }
 
-      const alreadyDone = (latest.completedLessons || []).includes(lessonId);
-      if (alreadyDone) {
-        console.log("STEP 2: Already completed, skipping", lessonId);
-        return;
+      const latestCourse =
+        progressDataRef.current[courseId] || {};
+
+      const currentEnrollmentId =
+        latestCourse.enrollmentId;
+
+      if (!currentEnrollmentId) {
+        throw new Error("Enrollment not found.");
       }
 
-      // Call the dedicated progress service
-      const res = await markLessonComplete(eid, lessonId);
+      const alreadyCompleted =
+        (latestCourse.completedLessons || []).includes(
+          String(lessonId)
+        );
 
-      // After API success, refetch all enrollments so ProgressContext updates globally
-      // This ensures Profile, CourseDetails, etc. all see the new progress
-      await fetchAllUserProgress();
+      if (alreadyCompleted) {
+        return latestCourse;
+      }
 
-      console.log("STEP 9: useCourseProgress state refreshed");
-      return res;
+      try {
+        console.log("Updating Progress...", {
+          enrollmentId: currentEnrollmentId,
+          lessonId,
+        });
+
+        // Backend API
+        const response = await markLessonComplete(
+          currentEnrollmentId,
+          lessonId
+        );
+
+        console.log("Progress Updated", response);
+
+        // Refresh ONLY this course
+        await fetchCourseProgress(courseId);
+
+        return response;
+      } catch (error) {
+        console.error("Failed to update progress", error);
+        throw error;
+      }
     },
-    [courseId, fetchAllUserProgress]
+    [courseId, fetchCourseProgress]
   );
+
+  /**
+   * Reload course progress
+   */
+  const refreshProgress = useCallback(async () => {
+    if (!courseId) return;
+
+    try {
+      await fetchCourseProgress(courseId);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [courseId, fetchCourseProgress]);
 
   return {
     progress,
@@ -72,7 +128,7 @@ const useCourseProgress = (courseId) => {
     originalEnrollment,
     isLessonCompleted,
     markComplete,
-    fetchCourseProgress,
+    fetchCourseProgress: refreshProgress,
   };
 };
 

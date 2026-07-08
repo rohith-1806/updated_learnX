@@ -7,6 +7,8 @@
   transform: translate3d(0, 0, 0);
   will-change: transform;
   transition: none; /* No movement lag */
+  backface-visibility: hidden;
+  contain: paint;
 }
 
 .premium-arrow-svg {
@@ -15,32 +17,34 @@
 }
 
 .cursor-arrow-wrapper.cursor-hover .premium-arrow-svg {
-  filter: brightness(1.2) drop-shadow(0 0 8px rgba(192, 132, 252, 0.6));
+  filter: brightness(1.2) drop-shadow(0 0 5px rgba(192, 132, 252, 0.5));
 }
 
 .cursor-particle {
   position: fixed;
-  margin-top: -3px;
-  margin-left: -3px;
-  width: 6px;
-  height: 6px;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  filter: drop-shadow(0 0 8px currentColor);
-  opacity: 0.9;
+  filter: drop-shadow(0 0 4px currentColor);
+  opacity: 0.8;
   animation: particleDisappear 0.7s ease-out forwards;
   will-change: transform, opacity;
+  backface-visibility: hidden;
+  contain: paint;
 }
 
 @keyframes particleDisappear {
   0% {
     opacity: 0.9;
-    transform: scale(1) translateY(0);
+    transform: translate3d(var(--x), var(--y), 0) scale(1);
   }
   100% {
     opacity: 0;
-    transform: scale(0) translateY(-25px);
+    transform: translate3d(var(--x), calc(var(--y) - 25px), 0) scale(0);
   }
 }
 

@@ -81,14 +81,12 @@
   inset: 0;
   z-index: 49;
   background: rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
   animation: dropdownBackdropIn 0.2s ease-out;
 }
 
 @keyframes dropdownBackdropIn {
-  from { opacity: 0; backdrop-filter: blur(0); }
-  to { opacity: 1; backdrop-filter: blur(3px); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ---- Options Panel ---- */
