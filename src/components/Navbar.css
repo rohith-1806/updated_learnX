@@ -24,10 +24,10 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem;
-  display: grid;
-  grid-template-columns: 1.5fr 3fr 1.5fr;
+  display: flex;
   align-items: center;
-  height: 3.5rem;
+  justify-content: space-between;
+  height: 72px;
 }
 
 .navbar-logo {
@@ -38,7 +38,7 @@
   font-weight: 850;
   font-size: 1.5rem;
   color: var(--text-main);
-  justify-self: start;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -117,18 +117,22 @@
   bottom: 0;
 }
 
-/* Navbar Menu wrapping both center links and right buttons */
 .navbar-menu {
-  display: contents;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  margin-left: 2rem;
 }
 
 .nav-links {
   display: flex;
+  align-items: center;
   list-style: none;
-  gap: 1.875rem;
+  gap: 32px;
   margin: 0;
   padding: 0;
-  justify-self: center;
+  white-space: nowrap;
 }
 
 .nav-link {
@@ -136,8 +140,6 @@
   font-weight: 650;
   font-size: 0.95rem;
   text-decoration: none;
-  /* CURSOR FIX: Use specific properties, NOT 'all' — 'all' includes
-     transform which would animate translateY shifts and break the cursor */
   transition: color 0.2s ease, background-color 0.2s ease;
   position: relative;
   padding: 0.25rem 0;
@@ -169,16 +171,20 @@
 }
 
 .auth-buttons {
-  justify-self: end;
   display: flex;
   align-items: center;
+  gap: 16px;
   height: 100%;
+  white-space: nowrap;
+  flex-wrap: nowrap;
 }
 
 .guest-menu {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
+  white-space: nowrap;
+  flex-wrap: nowrap;
 }
 
 .btn-login {
@@ -209,12 +215,43 @@
   box-shadow: 0 6px 14px rgba(168, 85, 247, 0.3);
 }
 
-.user-profile-menu {
+.global-theme-toggle-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  border-radius: 50%;
+  background: var(--resume-glass-bg, rgba(255, 255, 255, 0.12));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: static;
+}
+
+.global-theme-toggle-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(124, 108, 255, 0.35);
+}
+
+.user-profile-menu {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
   height: 100%;
+  white-space: nowrap;
+  flex-wrap: nowrap;
 }
 
 .profile-icon-btn {

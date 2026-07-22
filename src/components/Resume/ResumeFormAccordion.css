@@ -1,0 +1,314 @@
+@import './ResumeTheme.css';
+
+.resume-accordion-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.glass-accordion-item {
+  background: var(--resume-glass-bg);
+  border: 1px solid var(--resume-glass-border);
+  backdrop-filter: blur(16px);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--resume-shadow);
+}
+
+.glass-accordion-item.is-open {
+  border-color: var(--resume-primary);
+  box-shadow: var(--resume-shadow-hover);
+}
+
+.accordion-header-btn {
+  width: 100%;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--resume-text-primary);
+}
+
+.accordion-header-btn:hover {
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.accordion-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.accordion-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--resume-icon-box-bg);
+  color: var(--resume-icon-box-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glass-accordion-item.is-open .accordion-icon-box {
+  background: var(--resume-btn-gradient);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.accordion-title-text {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--resume-text-primary);
+}
+
+.accordion-chevron {
+  color: var(--resume-text-secondary);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+  color: var(--resume-primary);
+}
+
+.accordion-body-wrapper {
+  overflow: hidden;
+}
+
+.accordion-content-inner {
+  padding: 0 20px 20px 20px;
+}
+
+/* Form inputs & grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--resume-text-secondary);
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  background: var(--resume-input-bg);
+  border: 1px solid var(--resume-input-border);
+  color: var(--resume-input-text);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--resume-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+/* Photo Upload */
+.photo-upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.photo-preview-flex {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.form-avatar-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--resume-primary);
+}
+
+.form-avatar-placeholder {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--resume-badge-bg);
+  color: var(--resume-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-glass-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--resume-card-bg);
+  border: 1px solid var(--resume-border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--resume-text-primary);
+  cursor: pointer;
+}
+
+.btn-glass-upload:hover {
+  background: var(--resume-border);
+}
+
+/* Array items */
+.array-section-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.array-card-item {
+  background: var(--resume-item-card-bg);
+  border: 1px solid var(--resume-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.array-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--resume-secondary);
+  background: var(--resume-badge-bg);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.btn-icon-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn-icon-danger:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.btn-add-item {
+  width: 100%;
+  padding: 12px;
+  background: var(--resume-badge-bg);
+  border: 1px dashed var(--resume-primary);
+  color: var(--resume-primary);
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-add-item:hover {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+/* Skills & Chips */
+.skills-section-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skill-input-add-row {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-add-chip {
+  padding: 0 18px;
+  background: var(--resume-btn-gradient);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.skill-chips-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.interactive-skill-chip {
+  background: var(--resume-badge-bg);
+  border: 1px solid var(--resume-border);
+  color: var(--resume-text-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip-remove-btn {
+  background: none;
+  border: none;
+  color: var(--resume-text-secondary);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.chip-remove-btn:hover {
+  color: #ef4444;
+}

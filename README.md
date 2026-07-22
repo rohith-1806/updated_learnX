@@ -1,70 +1,88 @@
-# Getting Started with Create React App
+# 🚀 LernX Platform & Resume Builder Studio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> **Modern, Glassmorphic EdTech Platform featuring an Interactive ATS-Friendly Resume Builder & Career Suite.**
 
-## Available Scripts
+![LernX Platform](https://img.shields.io/badge/LernX-v1.0.0-6366f1?style=for-the-badge&logo=react)
+![React](https://img.shields.io/badge/React-19.2.6-61dafb?style=for-the-badge&logo=react)
+![Theme](https://img.shields.io/badge/Theme-Light%20%7C%20Dark-a855f7?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## ✨ Features & Highlights
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 📝 1. Resume Builder Module (`/resume`)
+* **Split-View Realtime Builder**: 10 glass accordion form sections (Personal Info, Education, Skills, Experience, Projects, Certifications, Achievements, Languages, Interests, Declaration) updating a live A4 paper preview instantly.
+* **8 Professional Templates**: Modern, Minimal, Executive, Corporate, Classic, Creative, Developer, Student.
+* **Customization Controls**: 7 Color presets, 5 Google font families, live zoom, and **1-click client-side PDF Export** via `html2pdf.js`.
+* **AI ATS Resume Checker**: File drag & drop, sequential loading status messages, 82% score circle gauge, category breakdowns, missing keyword detection, and priority suggestions.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 🌐 2. Complete EdTech Learning Suite
+* **Interactive Courses & Details** (`/courses`, `/course/:id`)
+* **LMS Video & Interactive Player** (`/player/:courseId`)
+* **Events & Tech Workshops** (`/events`)
+* **User Profile & Verifiable Certificates** (`/profile`, `/certificate`)
 
-### `npm test`
+### ☀️ 3. Global Theme Engine
+* **Universal Light & Dark Mode**: One-click circular glass theme toggle `[ ☀️ | 🌙 ]` in the Navbar.
+* **Adaptive Glassmorphism UI**: High-contrast, premium styling across all modules.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## ⚡ Quick Start
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+# 1. Clone the repository
+git clone https://github.com/rohith-1806/updated_learnX.git
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# 2. Navigate to project directory
+cd updated_learnX
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# 3. Install dependencies
+npm install
 
-### `npm run eject`
+# 4. Start local development server
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🛠️ Built With
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* **Frontend Framework**: React 19, React Router v7
+* **Animations**: Framer Motion
+* **Icons**: Lucide React & Custom SVGs
+* **PDF Export**: html2pdf.js
+* **Styling**: Pure Modular Vanilla CSS Variables
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 📂 Project Architecture
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```text
+src/
+├── components/
+│   ├── Navbar.jsx / Navbar.css          # Floating Navbar with Global Theme Toggle
+│   ├── Resume/                          # Resume Studio Components
+│   │   ├── ResumeDashboard.jsx           # Hero Header & Quick Action Cards
+│   │   ├── ResumeBuilder.jsx             # Split-View Form & Live Preview
+│   │   ├── ResumeFormAccordion.jsx       # 10 Form Accordions
+│   │   ├── ResumePreview.jsx             # Real-Time A4 Document Renderer
+│   │   ├── ResumeTemplates.jsx           # 8-Template Gallery
+│   │   ├── AtsChecker.jsx                # ATS Scanner & Score Dashboard
+│   │   ├── ResumeTheme.css               # Light & Dark Theme CSS Variables
+│   │   └── dummyData.js                  # Initial Data & ATS Models
+│   └── common/                          # Loaders & UI Helpers
+├── context/
+│   ├── AuthContext.jsx                   # User Session State
+│   └── ThemeContext.jsx                  # Global Light/Dark Theme Context
+└── App.jsx                               # App Router & Routes
+```
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<p align="center">
+  Developed with ❤️ for <b>LernX Platform</b>
+</p>

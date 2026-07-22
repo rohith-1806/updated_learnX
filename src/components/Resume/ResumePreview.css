@@ -1,0 +1,467 @@
+@import './ResumeTheme.css';
+
+.resume-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.preview-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 18px;
+  background: var(--resume-glass-bg);
+  border: 1px solid var(--resume-glass-border);
+  backdrop-filter: blur(14px);
+  border-radius: 14px 14px 0 0;
+  margin-bottom: -1px;
+  z-index: 5;
+}
+
+.preview-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--resume-text-primary);
+}
+
+.sparkle-icon {
+  color: var(--resume-secondary);
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.preview-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.preview-action-btn.primary {
+  background: var(--resume-btn-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.preview-action-btn.primary:hover {
+  transform: translateY(-1px);
+}
+
+.preview-action-btn.secondary {
+  background: var(--resume-card-bg);
+  color: var(--resume-text-primary);
+  border: 1px solid var(--resume-border);
+}
+
+.preview-action-btn.secondary:hover {
+  background: var(--resume-border);
+}
+
+/* A4 Container & Scaling */
+.a4-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 20px;
+  background: var(--resume-paper-wrapper-bg);
+  border: 1px solid var(--resume-border);
+  border-radius: 0 0 16px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Real A4 Paper proportions (210mm x 297mm ratio ~ 1 : 1.414) */
+.a4-paper {
+  width: 100%;
+  max-width: 720px;
+  min-height: 1018px;
+  background: #ffffff !important;
+  color: #1e293b !important;
+  padding: 40px 48px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Paper Typography & Colors override regardless of Dark mode */
+.a4-paper h1,
+.a4-paper h2,
+.a4-paper h3,
+.a4-paper h4,
+.a4-paper p,
+.a4-paper span,
+.a4-paper div,
+.a4-paper li,
+.a4-paper strong {
+  color: inherit;
+}
+
+/* Header Styles */
+.paper-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--accent-color, #6366f1);
+  margin-bottom: 20px;
+}
+
+.header-photo-wrapper {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--accent-color, #6366f1);
+  flex-shrink: 0;
+}
+
+.header-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header-text-block {
+  flex: 1;
+}
+
+.header-name {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a !important;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.header-role {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--accent-color, #6366f1) !important;
+  margin: 0 0 10px 0;
+}
+
+.contact-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  font-size: 0.78rem;
+  color: #475569 !important;
+}
+
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.meta-icon {
+  color: var(--accent-color, #6366f1);
+}
+
+/* Sections */
+.paper-section {
+  margin-bottom: 18px;
+}
+
+.section-heading {
+  font-size: 0.98rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-color, #6366f1) !important;
+  margin: 0 0 4px 0;
+}
+
+.heading-line {
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-color, #6366f1) 0%, rgba(99, 102, 241, 0.1) 100%);
+  margin-bottom: 12px;
+}
+
+.summary-text {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #334155 !important;
+  margin: 0;
+}
+
+/* Timeline & Lists */
+.timeline-list,
+.education-list,
+.projects-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.timeline-item,
+.project-card-item,
+.education-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.item-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a !important;
+}
+
+.item-company {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #475569 !important;
+}
+
+.item-duration,
+.edu-dates {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b !important;
+}
+
+.cgpa-badge {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent-color, #6366f1) !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  font-weight: 700;
+}
+
+.item-description {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #334155 !important;
+  margin: 4px 0 0 0;
+  white-space: pre-line;
+}
+
+.project-links {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+}
+
+.p-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--accent-color, #6366f1) !important;
+}
+
+.tech-badge-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.tech-pill {
+  background: #f1f5f9;
+  color: #334155 !important;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.skills-chip-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preview-skill-chip {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #1e293b !important;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.skill-lvl {
+  color: #64748b !important;
+  margin-left: 4px;
+  font-weight: 400;
+}
+
+/* Two Columns Layout */
+.two-col-section {
+  display: flex;
+  gap: 20px;
+}
+
+.col-half {
+  flex: 1;
+}
+
+.simple-bullet-list {
+  padding-left: 16px;
+  margin: 0;
+  font-size: 0.82rem;
+  color: #334155 !important;
+  line-height: 1.5;
+}
+
+.lang-grid,
+.interests-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lang-pill,
+.interest-tag {
+  background: #f1f5f9;
+  font-size: 0.76rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: #334155 !important;
+}
+
+.declaration-box {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.declaration-text {
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #475569 !important;
+}
+
+.declaration-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 0.78rem;
+  margin-top: 10px;
+  color: #334155 !important;
+}
+
+.signature-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.9rem;
+  color: var(--accent-color, #6366f1) !important;
+}
+
+.signature-mark small {
+  font-size: 0.65rem;
+  color: #94a3b8 !important;
+}
+
+.a4-footer-watermark {
+  position: absolute;
+  bottom: 12px;
+  right: 20px;
+  font-size: 0.68rem;
+  color: #cbd5e1 !important;
+  font-weight: 500;
+}
+
+/* TEMPLATE SPECIFIC STYLES */
+
+/* Minimal Template */
+.a4-paper.template-minimal {
+  padding: 48px;
+}
+.a4-paper.template-minimal .paper-header {
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+  flex-direction: column;
+  gap: 8px;
+}
+.a4-paper.template-minimal .contact-meta-row {
+  justify-content: center;
+}
+.a4-paper.template-minimal .heading-line {
+  background: #0f172a;
+}
+
+/* Executive Template */
+.a4-paper.template-executive {
+  padding-top: 0;
+}
+.a4-paper.template-executive .paper-header {
+  background: var(--accent-color, #0284c7);
+  margin: 0 -48px 24px -48px;
+  padding: 32px 48px;
+  border-bottom: none;
+}
+.a4-paper.template-executive .header-name {
+  color: #ffffff !important;
+}
+.a4-paper.template-executive .header-role {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+.a4-paper.template-executive .contact-meta-row {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+.a4-paper.template-executive .meta-icon {
+  color: #ffffff;
+}
+
+/* Developer Template */
+.a4-paper.template-developer .preview-skill-chip {
+  background: #0f172a;
+  color: #38bdf8 !important;
+  border-color: #0f172a;
+}
+
+/* Print Overrides */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #resume-a4-document,
+  #resume-a4-document * {
+    visibility: visible;
+  }
+  #resume-a4-document {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+  }
+}

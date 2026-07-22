@@ -1,0 +1,88 @@
+/* ================================================
+   LERNX RESUME BUILDER MODULE THEME SYSTEM
+   Supports Automatic Light & Dark Theme Adaptations
+   ================================================ */
+
+:root,
+[data-theme="light"] {
+  --resume-bg: #F7F9FC;
+  --resume-card-bg: #FFFFFF;
+  --resume-primary: #6366F1;
+  --resume-secondary: #8B5CF6;
+  --resume-text-primary: #111827;
+  --resume-text-secondary: #6B7280;
+  --resume-border: #E5E7EB;
+  --resume-glass-bg: rgba(255, 255, 255, 0.75);
+  --resume-glass-border: rgba(229, 231, 235, 0.8);
+  --resume-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+  --resume-shadow-hover: 0 12px 28px rgba(99, 102, 241, 0.15);
+  --resume-hero-bg: linear-gradient(135deg, #ffffff 0%, #f3f0ff 100%);
+  --resume-hero-border: #E5E7EB;
+  --resume-input-bg: #FFFFFF;
+  --resume-input-border: #D1D5DB;
+  --resume-input-text: #111827;
+  --resume-badge-bg: rgba(99, 102, 241, 0.1);
+  --resume-badge-text: #4F46E5;
+  --resume-btn-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --resume-dropdown-bg: #FFFFFF;
+  --resume-overlay-bg: rgba(247, 249, 252, 0.85);
+  --resume-paper-wrapper-bg: #e2e8f0;
+  --resume-icon-box-bg: rgba(99, 102, 241, 0.1);
+  --resume-icon-box-color: #6366F1;
+  --resume-item-card-bg: #F9FAFB;
+}
+
+[data-theme="dark"] {
+  --resume-bg: #0B1220;
+  --resume-card-bg: #151C2F;
+  --resume-primary: #7C6CFF;
+  --resume-secondary: #A855F7;
+  --resume-text-primary: #F8FAFC;
+  --resume-text-secondary: #94A3B8;
+  --resume-border: rgba(255, 255, 255, 0.08);
+  --resume-glass-bg: rgba(20, 28, 47, 0.75);
+  --resume-glass-border: rgba(255, 255, 255, 0.12);
+  --resume-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --resume-shadow-hover: 0 14px 35px rgba(124, 108, 255, 0.25);
+  --resume-hero-bg: linear-gradient(135deg, rgba(21, 28, 47, 0.9) 0%, rgba(11, 18, 32, 0.95) 100%);
+  --resume-hero-border: rgba(255, 255, 255, 0.12);
+  --resume-input-bg: rgba(11, 18, 32, 0.6);
+  --resume-input-border: rgba(255, 255, 255, 0.14);
+  --resume-input-text: #F8FAFC;
+  --resume-badge-bg: rgba(124, 108, 255, 0.15);
+  --resume-badge-text: #A78BFA;
+  --resume-btn-gradient: linear-gradient(135deg, #7C6CFF 0%, #A855F7 100%);
+  --resume-dropdown-bg: #151C2F;
+  --resume-overlay-bg: rgba(11, 18, 32, 0.85);
+  --resume-paper-wrapper-bg: rgba(15, 23, 42, 0.4);
+  --resume-icon-box-bg: rgba(124, 108, 255, 0.18);
+  --resume-icon-box-color: #7C6CFF;
+  --resume-item-card-bg: rgba(0, 0, 0, 0.18);
+}
+
+/* Global Smooth Transitions for Theme Switching */
+.resume-dashboard-container,
+.resume-builder-page,
+.templates-page-container,
+.ats-checker-page,
+.action-glass-card,
+.resume-hero-section,
+.glass-accordion-item,
+.template-card-glass,
+.ats-dropzone-card,
+.ats-score-banner-card,
+.glass-panel-box,
+.builder-top-bar,
+.preview-action-bar,
+.form-input,
+.form-textarea,
+.glass-select,
+.control-item,
+.array-card-item,
+.interactive-skill-chip,
+.suggestion-card,
+.btn-action-trigger,
+.btn-ats-action,
+.btn-select-tmpl {
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+}

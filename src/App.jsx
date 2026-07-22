@@ -32,6 +32,12 @@ import OldCourses from "./components/Courses/Courses";
 import UserDashboard from "./components/UserDashboard/UserDashboard";
 import AdminDashboard from "./components/AdminDashboard/AdminDashboard";
 
+// RESUME MODULE
+import ResumeDashboard from "./components/Resume/ResumeDashboard";
+import ResumeBuilder from "./components/Resume/ResumeBuilder";
+import ResumeTemplates from "./components/Resume/ResumeTemplates";
+import AtsChecker from "./components/Resume/AtsChecker";
+
 function HomePage() {
   return (
     <>
@@ -45,7 +51,7 @@ function HomePage() {
 
 function App() {
   const location = useLocation();
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   // Hide the global Navbar in LMS player, dashboards, and verify-email screen
   const hideNavbar =
@@ -61,7 +67,7 @@ function App() {
   return (
     <>
       <CustomCursor />
-      {!hideNavbar && user && <Navbar />}
+      {!hideNavbar && <Navbar />}
       <Routes>
         {/* HOME */}
         <Route path="/" element={<HomePage />} />
@@ -78,6 +84,12 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/certificate" element={<Certificate />} />
         <Route path="/certificate/preview" element={<Certificate />} />
+
+        {/* RESUME MODULE */}
+        <Route path="/resume" element={<ResumeDashboard />} />
+        <Route path="/resume/builder" element={<ResumeBuilder />} />
+        <Route path="/resume/templates" element={<ResumeTemplates />} />
+        <Route path="/resume/ats" element={<AtsChecker />} />
 
         {/* OLD ROUTING COMPATIBILITY */}
         <Route path="/create-account" element={<CreateAccount />} />
