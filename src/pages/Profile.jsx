@@ -7,7 +7,7 @@ import { getMyCertificates } from "../services/certificateApi";
 import { useNavigate, useLocation } from "react-router-dom";
 import ProgressBar from "../components/ProgressBar";
 import { CourseCardSkeleton, CertificateCardSkeleton, EventCardSkeleton, SettingsSkeleton } from "../components/common/ProfileSkeletons";
-import { User, BookOpen, Award, CalendarDays, Settings, LogOut, CheckCircle, ChevronRight, Sun, Moon, MapPin } from "lucide-react";
+import { User, BookOpen, Award, CalendarDays, Settings, LogOut, CheckCircle, ChevronRight, Sun, Moon, MapPin, FileText } from "lucide-react";
 import "./Profile.css";
 
 // --------------------------------------------------------------------------
@@ -472,6 +472,16 @@ const Profile = () => {
             </span>
             <span className="nav-count-badge">
               {profileLoading ? "..." : events.length}
+            </span>
+          </button>
+
+          <button 
+            className={`nav-item-btn ${activeTab === "resume" ? "active" : ""}`} 
+            onClick={() => navigate("/resume")}
+          >
+            <span className="nav-item-content">
+              <FileText size={18} />
+              My Resume
             </span>
           </button>
 

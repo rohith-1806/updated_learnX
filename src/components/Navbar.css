@@ -28,6 +28,7 @@
   align-items: center;
   justify-content: space-between;
   height: 72px;
+  position: relative;
 }
 
 .navbar-logo {
@@ -122,17 +123,22 @@
   align-items: center;
   justify-content: space-between;
   flex: 1;
-  margin-left: 2rem;
+  margin-left: 0;
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  list-style: none;
-  gap: 32px;
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
+@media (min-width: 769px) {
+  .nav-links {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 32px;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+  }
 }
 
 .nav-link {
@@ -177,6 +183,7 @@
   height: 100%;
   white-space: nowrap;
   flex-wrap: nowrap;
+  margin-left: auto;
 }
 
 .guest-menu {
@@ -215,33 +222,64 @@
   box-shadow: 0 6px 14px rgba(168, 85, 247, 0.3);
 }
 
+/* ===================================================
+   ELEGANT GLASSMORPHISM THEME TOGGLE BUTTON
+   =================================================== */
 .global-theme-toggle-btn {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  min-height: 42px;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
   border-radius: 50%;
-  background: var(--resume-glass-bg, rgba(255, 255, 255, 0.12));
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
   cursor: pointer;
   outline: none;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   flex-shrink: 0;
-  position: static;
+  position: relative;
+  overflow: hidden;
+}
+
+:root:not([data-theme="dark"]) .global-theme-toggle-btn {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: #6366f1;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.12);
+}
+
+[data-theme="dark"] .global-theme-toggle-btn {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.15);
 }
 
 .global-theme-toggle-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(124, 108, 255, 0.35);
+  transform: scale(1.08) rotate(12deg);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+}
+
+@keyframes themeIconSwitch {
+  0% {
+    transform: rotate(-90deg) scale(0.4);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.theme-toggle-icon {
+  animation: themeIconSwitch 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: block;
 }
 
 .user-profile-menu {
@@ -250,37 +288,53 @@
   justify-content: flex-end;
   gap: 16px;
   height: 100%;
+  margin: 0;
+  padding: 0;
   white-space: nowrap;
   flex-wrap: nowrap;
 }
 
 .profile-icon-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: filter 0.2s ease;
+  margin: 0;
+  padding: 0;
+  transition: filter 0.2s ease, transform 0.2s ease;
+  border-radius: 50%;
 }
 
 .profile-icon-btn:hover {
   filter: brightness(1.1);
+  transform: scale(1.05);
 }
 
 .avatar-svg {
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+  display: block;
 }
 
 .btn-logout {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #f1f5f9;
   color: #475569;
   border: 1px solid #cbd5e1;
   font-weight: 700;
-  font-size: 0.8rem;
-  padding: 0.4rem 0.85rem;
-  border-radius: 8px;
+  font-size: 0.82rem;
+  padding: 0 16px;
+  margin: 0 !important;
+  border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   line-height: 1;
@@ -322,6 +376,8 @@
   }
 
   .nav-links {
+    position: static;
+    transform: none;
     flex-direction: column;
     width: 100%;
     gap: 1rem;
@@ -343,54 +399,10 @@
     gap: 1rem;
     text-align: center;
     justify-self: stretch;
+    margin-left: 0;
   }
 
   .profile-icon-btn {
     justify-content: center;
   }
-}
-
-/* ===================================================
-   NAVBAR ALIGNMENT FIX (Task 2)
-   =================================================== */
-
-/* Navbar right section containing profile icon + logout button */
-.navbar-right,
-[class*="navbar-right"],
-[class*="nav-right"],
-[class*="NavRight"],
-.user-profile-menu {
-  display: flex;
-  align-items: center;      /* vertically centers all children */
-  gap: 12px;                /* consistent spacing between items */
-  height: 100%;             /* fill full navbar height */
-}
-
-/* Profile icon */
-.navbar-right .profile-icon,
-.navbar-right [class*="profile-icon"],
-.navbar-right [class*="ProfileIcon"],
-.profile-icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  line-height: 1;
-}
-
-/* Logout button */
-.navbar-right .logout-btn,
-.navbar-right button,
-.navbar-right [class*="logout"],
-.btn-logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 8px 16px;
-  line-height: 1;
-  /* Remove any top/bottom margin that may be pushing it down */
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
 }

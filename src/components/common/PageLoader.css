@@ -7,15 +7,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.85);
   z-index: 9999;
   pointer-events: all;
 }
 
 [data-theme="dark"] .lx-global-loader-wrapper {
-  background: rgba(10, 12, 18, 0.45);
+  background: rgba(10, 12, 18, 0.85);
 }
 
 .lx-loader-ring {

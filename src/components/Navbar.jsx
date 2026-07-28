@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Sun, Moon } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import "./Navbar.css";
@@ -58,11 +59,6 @@ const Navbar = () => {
                 Events
               </Link>
             </li>
-            <li>
-              <Link to="/resume" className={`nav-link ${isActive("/resume")}`} onClick={() => setIsOpen(false)}>
-                My Resume
-              </Link>
-            </li>
           </ul>
 
           <div className="auth-buttons">
@@ -75,7 +71,11 @@ const Navbar = () => {
                   aria-label="Toggle Theme"
                   type="button"
                 >
-                  {theme === 'dark' ? '☀️' : '🌙'}
+                  {theme === 'dark' ? (
+                    <Sun key="sun" className="theme-toggle-icon" size={18} />
+                  ) : (
+                    <Moon key="moon" className="theme-toggle-icon" size={18} />
+                  )}
                 </button>
                 <Link to="/profile" className="profile-icon-btn" title="View Profile" onClick={() => setIsOpen(false)}>
                   <svg className="avatar-svg" viewBox="0 0 24 24" width="32" height="32">
@@ -97,7 +97,11 @@ const Navbar = () => {
                   aria-label="Toggle Theme"
                   type="button"
                 >
-                  {theme === 'dark' ? '☀️' : '🌙'}
+                  {theme === 'dark' ? (
+                    <Sun key="sun" className="theme-toggle-icon" size={18} />
+                  ) : (
+                    <Moon key="moon" className="theme-toggle-icon" size={18} />
+                  )}
                 </button>
                 <Link to="/user-login" className="btn-login" onClick={() => setIsOpen(false)}>
                   Login

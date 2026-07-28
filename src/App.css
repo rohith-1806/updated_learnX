@@ -415,9 +415,9 @@ html[data-theme="dark"],
    HOME PAGE THEME REBUILD
    =================================================== */
 [data-theme="dark"] .hero,
-[data-theme="dark"] [class*="hero"],
-[data-theme="dark"] [class*="Hero"] {
-  background: linear-gradient(135deg, #111827, #1e1b4b) !important;
+[data-theme="dark"] [class*="hero"]:not(.hero-card):not(.hero-btn):not(.hero-gradient-text),
+[data-theme="dark"] [class*="Hero"]:not(.hero-card):not(.hero-btn):not(.hero-gradient-text) {
+  background: transparent !important;
   color: var(--text-main) !important;
 }
 
