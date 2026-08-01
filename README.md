@@ -49,40 +49,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🛠️ Built With
-
-* **Frontend Framework**: React 19, React Router v7
-* **Animations**: Framer Motion
-* **Icons**: Lucide React & Custom SVGs
-* **PDF Export**: html2pdf.js
-* **Styling**: Pure Modular Vanilla CSS Variables
-
----
-
-## 📂 Project Architecture
-
-```text
-src/
-├── components/
-│   ├── Navbar.jsx / Navbar.css          # Floating Navbar with Global Theme Toggle
-│   ├── Resume/                          # Resume Studio Components
-│   │   ├── ResumeDashboard.jsx           # Hero Header & Quick Action Cards
-│   │   ├── ResumeBuilder.jsx             # Split-View Form & Live Preview
-│   │   ├── ResumeFormAccordion.jsx       # 10 Form Accordions
-│   │   ├── ResumePreview.jsx             # Real-Time A4 Document Renderer
-│   │   ├── ResumeTemplates.jsx           # 8-Template Gallery
-│   │   ├── AtsChecker.jsx                # ATS Scanner & Score Dashboard
-│   │   ├── ResumeTheme.css               # Light & Dark Theme CSS Variables
-│   │   └── dummyData.js                  # Initial Data & ATS Models
-│   └── common/                          # Loaders & UI Helpers
-├── context/
-│   ├── AuthContext.jsx                   # User Session State
-│   └── ThemeContext.jsx                  # Global Light/Dark Theme Context
-└── App.jsx                               # App Router & Routes
-```
-
----
-
 <p align="center">
   Developed with ❤️ for <b>LernX Platform</b>
 </p>
